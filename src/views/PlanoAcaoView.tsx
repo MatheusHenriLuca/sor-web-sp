@@ -18,6 +18,11 @@ import {
   List as ListIcon,
   ShieldCheck,
   ChevronRight,
+  ChevronLeft,
+  ChevronsLeft,
+  ChevronsRight,
+  ChevronDown,
+  ChevronUp,
   Trash2,
   Edit3,
   Paperclip,
@@ -28,7 +33,9 @@ import {
   HelpCircle,
   UploadCloud,
   FileCheck2,
-  Workflow
+  Workflow,
+  SlidersHorizontal,
+  Sparkles
 } from 'lucide-react';
 import { UsuarioQualidade, PlanoAcaoMestre, PlanoAcaoItem, StatusAcao, PrioridadeAcao, TipoAcao } from '../types';
 import { actionPlanService } from '../services/actionPlanService';
@@ -50,12 +57,31 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState<'kanban' | 'table'>('kanban');
 
-  // Filtros
+  // Filtros Globais
   const [search, setSearch] = useState('');
-  const [filtroPrograma, setFiltroPrograma] = useState<string>(idprograma || 'Todos');
   const [filtroPrioridade, setFiltroPrioridade] = useState<string>('Todas');
   const [filtroMinhasAcoes, setFiltroMinhasAcoes] = useState<boolean>(false);
   const [filtroTipoAcao, setFiltroTipoAcao] = useState<string>('Todos');
+  const [escopoTemporal, setEscopoTemporal] = useState<'ativas_recentes' | '30d' | '90d' | 'ano' | 'todas'>('ativas_recentes');
+
+  // Fila de Validação Prioritária da Qualidade (Controle de Visualização e Paginação)
+  const [filaValidacaoExpandida, setFilaValidacaoExpandida] = useState(true);
+  const [searchFilaValidacao, setSearchFilaValidacao] = useState('');
+  const [paginaValidacao, setPaginaValidacao] = useState(1);
+  const ITENS_POR_PAGINA_VALIDACAO = 6;
+
+  // Limite de itens renderizados por coluna no Kanban (Prevenção de congelamento de DOM)
+  const [limiteColuna, setLimiteColuna] = useState<Record<StatusAcao, number>>({
+    'Aberto': 25,
+    'Atrasado': 25,
+    'Concluído': 25,
+    'Validado': 25,
+    'Revisar': 25
+  });
+
+  // Paginação na visualização em Tabela
+  const [paginaTabela, setPaginaTabela] = useState(1);
+  const ITENS_POR_PAGINA_TABELA = 25;
 
   // Modais de Controle
   const [modalNovoPlanoOpen, setModalNovoPlanoOpen] = useState(false);
@@ -66,9 +92,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
   
   // Modal de Exclusão Auditada
   const [modalExcluirAcaoOpen, setModalExcluirAcaoOpen] = useState(false);
-  const [modalExcluirPlanoOpen, setModalExcluirPlanoOpen] = useState(false);
   const [motivoExclusao, setMotivoExclusao] = useState('');
-  const [planoParaExcluir, setPlanoParaExcluir] = useState<PlanoAcaoMestre | null>(null);
 
   // Item ativo em operação
   const [acaoAtiva, setAcaoAtiva] = useState<PlanoAcaoItem | null>(null);
@@ -160,44 +184,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
     return 'Aberto';
   };
 
-  // Ações pendentes de validação técnica pela qualidade (Banner prioritário)
-  const acoesPendentesValidacao = useMemo(() => {
-    return acoes.filter(a => a.status === 'Concluído');
-  }, [acoes]);
-
-  // Lista filtrada
-  const acoesFiltradas = useMemo(() => {
-    return acoes.filter(acao => {
-      // Busca texto
-      if (search) {
-        const q = search.toLowerCase();
-        const contra = (acao.contra_medida || '').toLowerCase();
-        const causa = (acao.causa || '').toLowerCase();
-        const resp = (acao.responsavel_acao || '').toLowerCase();
-        const idStr = String(acao.id);
-        const refProg = (acao.id_programa_acoes || '').toLowerCase();
-        if (!contra.includes(q) && !causa.includes(q) && !resp.includes(q) && !idStr.includes(q) && !refProg.includes(q)) {
-          return false;
-        }
-      }
-
-      // Filtro Minhas Ações
-      if (filtroMinhasAcoes) {
-        const resp = (acao.responsavel_acao || '').toLowerCase();
-        const userNome = (currentUser.nome || '').toLowerCase();
-        if (!resp.includes(userNome)) return false;
-      }
-
-      // Filtro Tipo de Ação
-      if (filtroTipoAcao !== 'Todos' && acao.tipo_acao !== filtroTipoAcao) {
-        return false;
-      }
-
-      return true;
-    });
-  }, [acoes, search, filtroMinhasAcoes, filtroTipoAcao, currentUser]);
-
-  // Contadores para KPIs
+  // Contadores para KPIs corporativos (calculados sobre o TOTAL da fábrica)
   const kpis = useMemo(() => {
     let abertas = 0;
     let atrasadas = 0;
@@ -215,6 +202,103 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
     return { total: acoes.length, abertas, atrasadas, concluidas, validadas };
   }, [acoes]);
 
+  // Ações pendentes de validação técnica pela qualidade (Banner prioritário)
+  const todasAcoesPendentesValidacao = useMemo(() => {
+    return acoes.filter(a => a.status === 'Concluído');
+  }, [acoes]);
+
+  // Filtro na Fila de Validação
+  const acoesValidacaoFiltradas = useMemo(() => {
+    if (!searchFilaValidacao.trim()) return todasAcoesPendentesValidacao;
+    const q = searchFilaValidacao.toLowerCase();
+    return todasAcoesPendentesValidacao.filter(a => 
+      (a.contra_medida || '').toLowerCase().includes(q) ||
+      (a.responsavel_acao || '').toLowerCase().includes(q) ||
+      (a.id_programa_acoes || '').toLowerCase().includes(q) ||
+      String(a.id).includes(q)
+    );
+  }, [todasAcoesPendentesValidacao, searchFilaValidacao]);
+
+  // Paginação da Fila de Validação
+  const totalPaginasValidacao = Math.ceil(acoesValidacaoFiltradas.length / ITENS_POR_PAGINA_VALIDACAO) || 1;
+  const acoesValidacaoExibidas = useMemo(() => {
+    const inicio = (paginaValidacao - 1) * ITENS_POR_PAGINA_VALIDACAO;
+    return acoesValidacaoFiltradas.slice(inicio, inicio + ITENS_POR_PAGINA_VALIDACAO);
+  }, [acoesValidacaoFiltradas, paginaValidacao]);
+
+  // Otimização de Performance: Filtro inteligente de ações a renderizar
+  const acoesFiltradas = useMemo(() => {
+    const now = Date.now();
+    const trintaDiasMs = 30 * 86400000;
+    const noventaDiasMs = 90 * 86400000;
+    const anoAtual = new Date().getFullYear();
+
+    return acoes.filter(acao => {
+      // 1. Filtro Temporal / Escopo
+      if (escopoTemporal === 'ativas_recentes') {
+        // Se já está validada e não é recente, oculta do Kanban padrão para não explodir o DOM com 8.275 cards
+        if (acao.status === 'Validado') {
+          if (acao.data_conclusao) {
+            const dataConcl = new Date(acao.data_conclusao).getTime();
+            if (now - dataConcl > trintaDiasMs) return false;
+          }
+        }
+      } else if (escopoTemporal === '30d') {
+        const refData = acao.data_conclusao || acao.data_planejada;
+        if (refData) {
+          const t = new Date(refData).getTime();
+          if (now - t > trintaDiasMs) return false;
+        }
+      } else if (escopoTemporal === '90d') {
+        const refData = acao.data_conclusao || acao.data_planejada;
+        if (refData) {
+          const t = new Date(refData).getTime();
+          if (now - t > noventaDiasMs) return false;
+        }
+      } else if (escopoTemporal === 'ano') {
+        const refData = acao.data_conclusao || acao.data_planejada;
+        if (refData) {
+          const y = new Date(refData).getFullYear();
+          if (y !== anoAtual) return false;
+        }
+      }
+
+      // 2. Busca texto
+      if (search) {
+        const q = search.toLowerCase();
+        const contra = (acao.contra_medida || '').toLowerCase();
+        const causa = (acao.causa || '').toLowerCase();
+        const resp = (acao.responsavel_acao || '').toLowerCase();
+        const idStr = String(acao.id);
+        const refProg = (acao.id_programa_acoes || '').toLowerCase();
+        if (!contra.includes(q) && !causa.includes(q) && !resp.includes(q) && !idStr.includes(q) && !refProg.includes(q)) {
+          return false;
+        }
+      }
+
+      // 3. Filtro Minhas Ações
+      if (filtroMinhasAcoes) {
+        const resp = (acao.responsavel_acao || '').toLowerCase();
+        const userNome = (currentUser.nome || '').toLowerCase();
+        if (!resp.includes(userNome)) return false;
+      }
+
+      // 4. Filtro Tipo de Ação
+      if (filtroTipoAcao !== 'Todos' && acao.tipo_acao !== filtroTipoAcao) {
+        return false;
+      }
+
+      return true;
+    });
+  }, [acoes, escopoTemporal, search, filtroMinhasAcoes, filtroTipoAcao, currentUser]);
+
+  // Paginação na Tabela
+  const totalPaginasTabela = Math.ceil(acoesFiltradas.length / ITENS_POR_PAGINA_TABELA) || 1;
+  const acoesTabelaExibidas = useMemo(() => {
+    const inicio = (paginaTabela - 1) * ITENS_POR_PAGINA_TABELA;
+    return acoesFiltradas.slice(inicio, inicio + ITENS_POR_PAGINA_TABELA);
+  }, [acoesFiltradas, paginaTabela]);
+
   // Colunas do Kanban
   const kanbanColumns: { status: StatusAcao; label: string; color: string; badge: string }[] = [
     { status: 'Aberto', label: 'Aberto / Em Andamento', color: 'border-blue-200 bg-blue-50/20', badge: 'bg-blue-100 text-blue-800' },
@@ -223,7 +307,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
     { status: 'Validado', label: 'Homologado / Eficaz', color: 'border-emerald-200 bg-emerald-50/20', badge: 'bg-emerald-100 text-emerald-800' }
   ];
 
-  // Ações de criação e validação
   const handleCreatePlano = async () => {
     if (!formNovoPlano.descricao_problema_oportunidade?.trim()) {
       alert('Informe a descrição do problema ou oportunidade.');
@@ -354,7 +437,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
     }
   };
 
-  // Exclusão Auditada de Ação
   const handleConfirmExclusaoAcao = async () => {
     if (!acaoAtiva) return;
     if (!motivoExclusao.trim()) {
@@ -372,29 +454,11 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
     }
   };
 
-  // Exclusão Auditada de Plano Mestre
-  const handleConfirmExclusaoPlano = async () => {
-    if (!planoParaExcluir) return;
-    if (!motivoExclusao.trim()) {
-      alert('É obrigatório informar o motivo da exclusão do plano para auditoria.');
-      return;
-    }
-    try {
-      await actionPlanService.deletePlano(planoParaExcluir.id, motivoExclusao, currentUser.nome);
-      setModalExcluirPlanoOpen(false);
-      setMotivoExclusao('');
-      setFeedbackMsg({ type: 'success', text: `Plano Mestre #${planoParaExcluir.id} excluído com sucesso!` });
-      loadData(true);
-    } catch (err: any) {
-      alert(err.message);
-    }
-  };
-
   return (
-    <div className="flex flex-col gap-6 w-full pb-12">
+    <div className="flex flex-col gap-5 w-full pb-12">
       
       {/* Top Banner & Header */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-6 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-5 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
         <div>
           <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-wider text-blue-600 mb-1">
             <CheckSquare className="w-4 h-4" />
@@ -409,8 +473,8 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
               </span>
             )}
           </h1>
-          <p className="text-sm text-slate-500 mt-1">
-            Controle de ações corretivas, preventivas e de melhoria para toda a planta, integrado às ocorrências de 8D e RNCs.
+          <p className="text-xs text-slate-500 mt-1">
+            Painel de alta performance com paginação inteligente e sincronização direta com o SharePoint.
           </p>
         </div>
 
@@ -419,7 +483,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
             type="button"
             onClick={() => loadData(true)}
             className="btn-secondary !h-9 text-xs flex items-center gap-1.5"
-            title="Recarregar dados do SharePoint"
+            title="Sincronizar com SharePoint Online"
           >
             <RotateCw className="w-3.5 h-3.5" />
             <span>Atualizar</span>
@@ -431,13 +495,13 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
             className="btn-secondary !h-9 text-xs flex items-center gap-1.5"
           >
             <Plus className="w-3.5 h-3.5" />
-            <span>Novo Cabeçalho de Plano</span>
+            <span>Novo Plano Mestre</span>
           </button>
 
           <button
             type="button"
             onClick={handleOpenNovaAcaoModal}
-            className="btn-primary !h-9 text-xs flex items-center gap-1.5 shadow-sm"
+            className="btn-primary !h-9 text-xs flex items-center gap-1.5 shadow-xs"
           >
             <Plus className="w-3.5 h-3.5" />
             <span>Nova Ação</span>
@@ -459,98 +523,216 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
         </div>
       )}
 
-      {/* BANNER PRIORITÁRIO: Galleryvalidacao do Power Apps */}
-      {acoesPendentesValidacao.length > 0 && (
-        <div className="bg-gradient-to-r from-amber-500/10 via-amber-50 to-amber-500/10 border border-amber-300 rounded-2xl p-4 shadow-xs">
-          <div className="flex items-center justify-between mb-3">
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-5 h-5 text-amber-600" />
-              <h3 className="text-sm font-bold text-amber-900 font-display">
-                Fila de Validação Prioritária da Qualidade ({acoesPendentesValidacao.length})
-              </h3>
-            </div>
-            <span className="text-xs text-amber-700 font-medium">
-              Ações concluídas aguardando homologação formal
-            </span>
-          </div>
-
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-            {acoesPendentesValidacao.map(acao => (
-              <div 
-                key={acao.id}
-                className="bg-white border border-amber-200 rounded-xl p-3 shadow-xs flex flex-col justify-between"
-              >
-                <div>
-                  <div className="flex items-center justify-between text-[11px] mb-1">
-                    <span className="font-bold text-slate-500">#{acao.id}</span>
-                    <span className="font-semibold text-amber-700 bg-amber-50 px-2 py-0.5 rounded border border-amber-200">
-                      Concluída pelo Responsável
-                    </span>
-                  </div>
-                  <p className="text-xs font-bold text-slate-900 line-clamp-2">{acao.contra_medida}</p>
-                  <p className="text-[11px] text-slate-500 mt-1 truncate">Resp: <strong>{acao.responsavel_acao}</strong></p>
-                </div>
-                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-end">
-                  <button
-                    type="button"
-                    onClick={() => {
-                      setAcaoAtiva(acao);
-                      setFormValidacao({ comentarios_validacao: '', aprovado: true });
-                      setModalValidarOpen(true);
-                    }}
-                    className="text-xs font-semibold px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition flex items-center gap-1 shadow-xs"
-                  >
-                    <ShieldCheck className="w-3.5 h-3.5" />
-                    <span>Auditar & Validar</span>
-                  </button>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      )}
-
       {/* Cards de KPI */}
-      <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
+      <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-slate-400">Total de Ações</span>
-          <p className="text-2xl font-bold font-display text-slate-900 mt-1">{kpis.total}</p>
+          <p className="text-2xl font-bold font-display text-slate-900 mt-1">{kpis.total.toLocaleString('pt-BR')}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-blue-600">Abertas / Em Curso</span>
-          <p className="text-2xl font-bold font-display text-blue-600 mt-1">{kpis.abertas}</p>
+          <p className="text-2xl font-bold font-display text-blue-600 mt-1">{kpis.abertas.toLocaleString('pt-BR')}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-rose-600">Prazo Vencido</span>
-          <p className="text-2xl font-bold font-display text-rose-600 mt-1">{kpis.atrasadas}</p>
+          <p className="text-2xl font-bold font-display text-rose-600 mt-1">{kpis.atrasadas.toLocaleString('pt-BR')}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-amber-600">Aguardando Validação</span>
-          <p className="text-2xl font-bold font-display text-amber-600 mt-1">{kpis.concluidas}</p>
+          <p className="text-2xl font-bold font-display text-amber-600 mt-1">{kpis.concluidas.toLocaleString('pt-BR')}</p>
         </div>
         <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs">
           <span className="text-[11px] font-semibold uppercase tracking-wider text-emerald-600">Homologadas</span>
-          <p className="text-2xl font-bold font-display text-emerald-600 mt-1">{kpis.validadas}</p>
+          <p className="text-2xl font-bold font-display text-emerald-600 mt-1">{kpis.validadas.toLocaleString('pt-BR')}</p>
         </div>
       </div>
 
+      {/* BANNER PRIORITÁRIO OTIMIZADO: Galleryvalidacao com Paginação e Colapso */}
+      {todasAcoesPendentesValidacao.length > 0 && (
+        <div className="bg-amber-50/40 border border-amber-300/80 rounded-2xl p-4 shadow-xs transition">
+          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pb-3 border-b border-amber-200/60">
+            <div className="flex items-center gap-2.5">
+              <div className="w-8 h-8 rounded-lg bg-amber-100 border border-amber-300 flex items-center justify-center shrink-0">
+                <ShieldCheck className="w-5 h-5 text-amber-700" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <h3 className="text-sm font-bold text-amber-950 font-display">
+                    Fila de Validação Prioritária da Qualidade
+                  </h3>
+                  <span className="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-500 text-white">
+                    {todasAcoesPendentesValidacao.length} pendentes
+                  </span>
+                </div>
+                <p className="text-xs text-amber-800/80">
+                  Ações concluídas pelos responsáveis que requerem parecer formal do auditor
+                </p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2 self-end sm:self-auto">
+              {/* Mini busca na fila */}
+              <div className="relative">
+                <Search className="w-3.5 h-3.5 absolute left-2.5 top-2 text-amber-600" />
+                <input
+                  type="text"
+                  placeholder="Filtrar fila..."
+                  value={searchFilaValidacao}
+                  onChange={e => {
+                    setSearchFilaValidacao(e.target.value);
+                    setPaginaValidacao(1);
+                  }}
+                  className="pl-7 pr-2.5 py-1 text-xs bg-white border border-amber-200 rounded-lg text-slate-800 w-36 sm:w-44 focus:outline-none focus:ring-1 focus:ring-amber-500"
+                />
+              </div>
+
+              {/* Botão Recolher/Expandir */}
+              <button
+                type="button"
+                onClick={() => setFilaValidacaoExpandida(!filaValidacaoExpandida)}
+                className="p-1.5 rounded-lg border border-amber-200 bg-white text-amber-800 hover:bg-amber-100/50 text-xs font-semibold flex items-center gap-1 transition"
+                title={filaValidacaoExpandida ? "Minimizar visualização da fila" : "Expandir visualização da fila"}
+              >
+                {filaValidacaoExpandida ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+                <span className="hidden md:inline">{filaValidacaoExpandida ? "Minimizar" : "Expandir"}</span>
+              </button>
+            </div>
+          </div>
+
+          {filaValidacaoExpandida && (
+            <div className="mt-3.5 flex flex-col gap-3">
+              {/* Grid Compacto Limitado a 6 Cards */}
+              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
+                {acoesValidacaoExibidas.length === 0 ? (
+                  <div className="col-span-3 text-center py-6 text-xs text-amber-800 italic bg-white/60 rounded-xl border border-dashed border-amber-200">
+                    Nenhuma ação encontrada com o filtro "{searchFilaValidacao}".
+                  </div>
+                ) : (
+                  acoesValidacaoExibidas.map(acao => (
+                    <div 
+                      key={acao.id}
+                      className="bg-white border border-amber-200 hover:border-amber-400 rounded-xl p-3 shadow-xs flex flex-col justify-between transition gap-2"
+                    >
+                      <div>
+                        <div className="flex items-center justify-between text-[11px] mb-1">
+                          <span className="font-bold text-slate-600">#{acao.id}</span>
+                          {acao.id_programa_acoes && (
+                            <span className="px-1.5 py-0.2 rounded text-[10px] bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+                              8D: {acao.id_programa_acoes}
+                            </span>
+                          )}
+                          <span className="font-semibold text-amber-800 bg-amber-50 px-2 py-0.5 rounded text-[10px] border border-amber-200">
+                            Concluída
+                          </span>
+                        </div>
+                        <p className="text-xs font-bold text-slate-900 line-clamp-2 leading-snug" title={acao.contra_medida}>
+                          {acao.contra_medida}
+                        </p>
+                        <p className="text-[11px] text-slate-500 mt-1 truncate">
+                          Resp: <strong>{acao.responsavel_acao}</strong>
+                        </p>
+                      </div>
+
+                      <div className="pt-2 border-t border-slate-100 flex items-center justify-end">
+                        <button
+                          type="button"
+                          onClick={() => {
+                            setAcaoAtiva(acao);
+                            setFormValidacao({ comentarios_validacao: '', aprovado: true });
+                            setModalValidarOpen(true);
+                          }}
+                          className="text-xs font-semibold px-2.5 py-1 bg-amber-600 hover:bg-amber-700 text-white rounded-lg transition flex items-center gap-1 shadow-xs"
+                        >
+                          <ShieldCheck className="w-3.5 h-3.5" />
+                          <span>Auditar & Validar</span>
+                        </button>
+                      </div>
+                    </div>
+                  ))
+                )}
+              </div>
+
+              {/* Paginação da Fila de Validação */}
+              {totalPaginasValidacao > 1 && (
+                <div className="flex items-center justify-between pt-2 text-xs text-amber-900 border-t border-amber-200/50">
+                  <span className="font-medium text-[11px]">
+                    Exibindo <strong>{(paginaValidacao - 1) * ITENS_POR_PAGINA_VALIDACAO + 1}</strong> a <strong>{Math.min(paginaValidacao * ITENS_POR_PAGINA_VALIDACAO, acoesValidacaoFiltradas.length)}</strong> de <strong>{acoesValidacaoFiltradas.length}</strong>
+                  </span>
+                  <div className="flex items-center gap-1">
+                    <button
+                      type="button"
+                      disabled={paginaValidacao === 1}
+                      onClick={() => setPaginaValidacao(p => Math.max(1, p - 1))}
+                      className="px-2 py-1 rounded bg-white border border-amber-200 hover:bg-amber-50 disabled:opacity-40 disabled:hover:bg-white text-xs font-semibold flex items-center gap-0.5"
+                    >
+                      <ChevronLeft className="w-3.5 h-3.5" />
+                      <span>Anterior</span>
+                    </button>
+                    <span className="px-2 py-1 font-bold text-[11px]">
+                      {paginaValidacao} / {totalPaginasValidacao}
+                    </span>
+                    <button
+                      type="button"
+                      disabled={paginaValidacao === totalPaginasValidacao}
+                      onClick={() => setPaginaValidacao(p => Math.min(totalPaginasValidacao, p + 1))}
+                      className="px-2 py-1 rounded bg-white border border-amber-200 hover:bg-amber-50 disabled:opacity-40 disabled:hover:bg-white text-xs font-semibold flex items-center gap-0.5"
+                    >
+                      <span>Próxima</span>
+                      <ChevronRight className="w-3.5 h-3.5" />
+                    </button>
+                  </div>
+                </div>
+              )}
+            </div>
+          )}
+        </div>
+      )}
+
       {/* Barra de Filtros e Alternância de Visualização */}
-      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-4">
+      <div className="bg-white border border-slate-200 rounded-2xl p-4 shadow-xs flex flex-col md:flex-row md:items-center justify-between gap-3">
         <div className="flex flex-1 items-center gap-3 flex-wrap">
-          <div className="relative flex-1 min-w-[240px]">
+          <div className="relative flex-1 min-w-[220px]">
             <Search className="w-4 h-4 absolute left-3 top-2.5 text-slate-400" />
             <input
               type="text"
               placeholder="Buscar contramedida, causa, responsável, ID..."
               value={search}
-              onChange={e => setSearch(e.target.value)}
+              onChange={e => {
+                setSearch(e.target.value);
+                setPaginaTabela(1);
+              }}
               className="w-full pl-9 pr-3 py-1.5 text-xs bg-slate-50 border border-slate-200 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500"
             />
           </div>
 
+          {/* Seletor Inteligente de Escopo Temporal */}
+          <div className="flex items-center gap-1 bg-slate-100 p-1 rounded-xl text-xs">
+            <span className="text-[10px] font-bold text-slate-500 uppercase px-1.5 flex items-center gap-1">
+              <SlidersHorizontal className="w-3 h-3 text-slate-400" />
+              <span>Escopo:</span>
+            </span>
+            <select
+              value={escopoTemporal}
+              onChange={e => {
+                setEscopoTemporal(e.target.value as any);
+                setPaginaTabela(1);
+              }}
+              className="bg-white border border-slate-200 rounded-lg text-xs font-semibold py-1 px-2 text-slate-700 focus:outline-none"
+            >
+              <option value="ativas_recentes">Ativas & Recentes (Padrão Rápido)</option>
+              <option value="30d">Últimos 30 Dias</option>
+              <option value="90d">Últimos 90 Dias</option>
+              <option value="ano">Ano Atual</option>
+              <option value="todas">Todas ({acoes.length})</option>
+            </select>
+          </div>
+
           <select
             value={filtroTipoAcao}
-            onChange={e => setFiltroTipoAcao(e.target.value)}
+            onChange={e => {
+              setFiltroTipoAcao(e.target.value);
+              setPaginaTabela(1);
+            }}
             className="text-xs py-1.5 px-3 bg-slate-50 border border-slate-200 rounded-xl font-medium text-slate-700"
           >
             <option value="Todos">Todos os Tipos de Ação</option>
@@ -564,33 +746,36 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
             <input
               type="checkbox"
               checked={filtroMinhasAcoes}
-              onChange={e => setFiltroMinhasAcoes(e.target.checked)}
+              onChange={e => {
+                setFiltroMinhasAcoes(e.target.checked);
+                setPaginaTabela(1);
+              }}
               className="rounded text-blue-600 focus:ring-blue-500"
             />
             <span>Minhas Ações</span>
           </label>
         </div>
 
-        <div className="flex items-center gap-2 border-l border-slate-200 pl-4">
+        <div className="flex items-center gap-2 border-l border-slate-200 pl-3">
           <button
             type="button"
             onClick={() => setViewMode('kanban')}
-            className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+            className={`p-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
               viewMode === 'kanban' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            <LayoutGrid className="w-4 h-4" />
+            <LayoutGrid className="w-3.5 h-3.5" />
             <span>Kanban</span>
           </button>
           <button
             type="button"
             onClick={() => setViewMode('table')}
-            className={`p-2 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
+            className={`p-1.5 px-3 rounded-lg text-xs font-semibold flex items-center gap-1.5 transition ${
               viewMode === 'table' ? 'bg-blue-600 text-white shadow-xs' : 'text-slate-600 hover:bg-slate-100'
             }`}
           >
-            <ListIcon className="w-4 h-4" />
-            <span>Lista</span>
+            <ListIcon className="w-3.5 h-3.5" />
+            <span>Tabela ({acoesFiltradas.length})</span>
           </button>
         </div>
       </div>
@@ -603,58 +788,61 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
         </div>
       ) : viewMode === 'kanban' ? (
         
-        /* VISUALIZAÇÃO KANBAN */
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+        /* VISUALIZAÇÃO KANBAN COM LIMITE INCREMENTAL ANTI-FREEZE */
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 items-start">
           {kanbanColumns.map(col => {
             const acoesDaColuna = acoesFiltradas.filter(a => getStatusDinamico(a) === col.status);
+            const limiteAtual = limiteColuna[col.status] || 25;
+            const acoesVisiveis = acoesDaColuna.slice(0, limiteAtual);
+            const temMais = acoesDaColuna.length > limiteAtual;
 
             return (
               <div 
                 key={col.status} 
-                className={`flex flex-col rounded-2xl border p-4 shadow-xs min-h-[500px] ${col.color}`}
+                className={`flex flex-col rounded-2xl border p-3.5 shadow-xs ${col.color}`}
               >
-                <div className="flex items-center justify-between pb-3 border-b border-slate-200/80 mb-3">
+                <div className="flex items-center justify-between pb-2.5 border-b border-slate-200/80 mb-3">
                   <span className="text-xs font-bold text-slate-800 uppercase tracking-wider font-display">
                     {col.label}
                   </span>
-                  <span className={`text-xs font-bold px-2.5 py-0.5 rounded-full ${col.badge}`}>
+                  <span className={`text-xs font-bold px-2 py-0.5 rounded-full ${col.badge}`}>
                     {acoesDaColuna.length}
                   </span>
                 </div>
 
-                <div className="flex-1 flex flex-col gap-3 overflow-y-auto pr-1">
+                <div className="flex flex-col gap-2.5">
                   {acoesDaColuna.length === 0 ? (
-                    <div className="text-center py-10 text-slate-400 text-xs italic">
+                    <div className="text-center py-8 text-slate-400 text-xs italic bg-white/40 rounded-xl border border-dashed border-slate-200">
                       Nenhuma ação neste status.
                     </div>
                   ) : (
-                    acoesDaColuna.map(acao => (
+                    acoesVisiveis.map(acao => (
                       <div
                         key={acao.id}
-                        className="bg-white border border-slate-200 rounded-xl p-3.5 shadow-xs hover:border-slate-300 transition flex flex-col justify-between gap-2.5"
+                        className="bg-white border border-slate-200 rounded-xl p-3 shadow-xs hover:border-slate-300 transition flex flex-col justify-between gap-2"
                       >
                         <div>
-                          <div className="flex items-center justify-between mb-1.5 flex-wrap gap-1">
+                          <div className="flex items-center justify-between mb-1 flex-wrap gap-1">
                             <span className="text-[10px] font-bold text-slate-400">#{acao.id}</span>
                             
                             <div className="flex items-center gap-1">
                               {acao.id_programa_acoes && (
-                                <span className="text-[10px] px-1.5 py-0.5 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">
+                                <span className="text-[10px] px-1.5 py-0.2 rounded bg-blue-50 text-blue-700 font-semibold border border-blue-200">
                                   8D: {acao.id_programa_acoes}
                                 </span>
                               )}
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-100 text-slate-700 font-semibold">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-100 text-slate-700 font-semibold">
                                 {acao.tipo_acao}
                               </span>
                             </div>
                           </div>
 
-                          <p className="text-xs font-bold text-slate-900 leading-snug">
+                          <p className="text-xs font-bold text-slate-900 leading-snug line-clamp-3">
                             {acao.contra_medida}
                           </p>
 
                           {acao.causa && (
-                            <p className="text-[11px] text-slate-500 mt-1 italic line-clamp-2">
+                            <p className="text-[11px] text-slate-500 mt-1 italic line-clamp-1">
                               Causa: {acao.causa}
                             </p>
                           )}
@@ -662,43 +850,37 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                           {/* Badges de Qualidade */}
                           <div className="flex flex-wrap gap-1 mt-2">
                             {acao.yokoten === 'SIM' && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-purple-50 text-purple-700 border border-purple-200 font-semibold">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-purple-50 text-purple-700 border border-purple-200 font-semibold">
                                 Yokoten
                               </span>
                             )}
                             {acao.poka_yoke === 'SIM' && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-emerald-50 text-emerald-700 border border-emerald-200 font-semibold">
                                 Poka-Yoke
                               </span>
                             )}
                             {acao.eight_d_seven_d && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-50 text-slate-600 border border-slate-200 font-semibold">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-slate-50 text-slate-600 border border-slate-200 font-semibold">
                                 {acao.eight_d_seven_d}
                               </span>
                             )}
                             {acao.status_revisar2 === 'Revisar' && (
-                              <span className="text-[10px] px-1.5 py-0.5 rounded bg-rose-100 text-rose-800 border border-rose-300 font-bold flex items-center gap-1">
+                              <span className="text-[10px] px-1.5 py-0.2 rounded bg-rose-100 text-rose-800 border border-rose-300 font-bold flex items-center gap-1">
                                 <AlertTriangle className="w-2.5 h-2.5" />
                                 <span>Revisar</span>
                               </span>
                             )}
                           </div>
 
-                          <div className="mt-3 pt-2 border-t border-slate-100 flex flex-col gap-1 text-[11px] text-slate-600">
+                          <div className="mt-2.5 pt-2 border-t border-slate-100 flex flex-col gap-0.5 text-[11px] text-slate-600">
                             <div className="flex items-center gap-1.5">
-                              <User className="w-3 h-3 text-slate-400" />
+                              <User className="w-3 h-3 text-slate-400 shrink-0" />
                               <span className="font-semibold text-slate-800 truncate">{acao.responsavel_acao}</span>
                             </div>
                             <div className="flex items-center gap-1.5">
-                              <Calendar className="w-3 h-3 text-slate-400" />
+                              <Calendar className="w-3 h-3 text-slate-400 shrink-0" />
                               <span>Prazo: <strong>{formatDateBR(acao.data_planejada)}</strong></span>
                             </div>
-                            {acao.data_acompanhamento && (
-                              <div className="flex items-center gap-1.5 text-slate-500">
-                                <Clock className="w-3 h-3 text-slate-400" />
-                                <span>Acomp: {formatDateBR(acao.data_acompanhamento)}</span>
-                              </div>
-                            )}
                           </div>
                         </div>
 
@@ -765,6 +947,22 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                       </div>
                     ))
                   )}
+
+                  {/* Botão de Carga Incremental */}
+                  {temMais && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLimiteColuna(prev => ({
+                          ...prev,
+                          [col.status]: (prev[col.status] || 25) + 25
+                        }));
+                      }}
+                      className="w-full py-2 text-xs font-semibold text-slate-600 hover:text-slate-900 bg-white hover:bg-slate-50 border border-slate-200 rounded-xl transition shadow-2xs mt-1"
+                    >
+                      Carregar mais (+25) • {acoesDaColuna.length - limiteAtual} restantes
+                    </button>
+                  )}
                 </div>
               </div>
             );
@@ -773,128 +971,177 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
 
       ) : (
 
-        /* VISUALIZAÇÃO EM TABELA */
-        <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-x-auto">
-          <table className="w-full text-left text-xs">
-            <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
-              <tr>
-                <th className="p-3.5">ID</th>
-                <th className="p-3.5">Vínculo 8D</th>
-                <th className="p-3.5">Causa / Contramedida</th>
-                <th className="p-3.5">Responsável</th>
-                <th className="p-3.5">Prazo Final</th>
-                <th className="p-3.5">Acompanhamento</th>
-                <th className="p-3.5">Tipo</th>
-                <th className="p-3.5">Controles</th>
-                <th className="p-3.5">Status</th>
-                <th className="p-3.5 text-right">Ações</th>
-              </tr>
-            </thead>
-            <tbody className="divide-y divide-slate-100 text-slate-700">
-              {acoesFiltradas.length === 0 ? (
+        /* VISUALIZAÇÃO EM TABELA PAGINADA */
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-xs overflow-hidden">
+          <div className="overflow-x-auto">
+            <table className="w-full text-left text-xs">
+              <thead className="bg-slate-50 border-b border-slate-200 text-slate-500 uppercase tracking-wider font-semibold">
                 <tr>
-                  <td colSpan={10} className="p-8 text-center text-slate-400 italic">
-                    Nenhuma ação encontrada com os filtros selecionados.
-                  </td>
+                  <th className="p-3.5">ID</th>
+                  <th className="p-3.5">Vínculo 8D</th>
+                  <th className="p-3.5">Causa / Contramedida</th>
+                  <th className="p-3.5">Responsável</th>
+                  <th className="p-3.5">Prazo Final</th>
+                  <th className="p-3.5">Tipo</th>
+                  <th className="p-3.5">Controles</th>
+                  <th className="p-3.5">Status</th>
+                  <th className="p-3.5 text-right">Ações</th>
                 </tr>
-              ) : (
-                acoesFiltradas.map(acao => {
-                  const status = getStatusDinamico(acao);
-                  return (
-                    <tr key={acao.id} className="hover:bg-slate-50/60 transition">
-                      <td className="p-3.5 font-bold text-slate-900">#{acao.id}</td>
-                      <td className="p-3.5">
-                        {acao.id_programa_acoes ? (
-                          <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded border border-blue-200 font-semibold text-[11px]">
-                            {acao.id_programa_acoes}
+              </thead>
+              <tbody className="divide-y divide-slate-100 text-slate-700">
+                {acoesTabelaExibidas.length === 0 ? (
+                  <tr>
+                    <td colSpan={9} className="p-8 text-center text-slate-400 italic">
+                      Nenhuma ação encontrada com os filtros selecionados.
+                    </td>
+                  </tr>
+                ) : (
+                  acoesTabelaExibidas.map(acao => {
+                    const status = getStatusDinamico(acao);
+                    return (
+                      <tr key={acao.id} className="hover:bg-slate-50/60 transition">
+                        <td className="p-3.5 font-bold text-slate-900">#{acao.id}</td>
+                        <td className="p-3.5">
+                          {acao.id_programa_acoes ? (
+                            <span className="px-2 py-0.5 bg-blue-50 text-blue-700 rounded border border-blue-200 font-semibold text-[11px]">
+                              {acao.id_programa_acoes}
+                            </span>
+                          ) : '-'}
+                        </td>
+                        <td className="p-3.5 max-w-sm">
+                          <div className="font-semibold text-slate-900 leading-snug line-clamp-2">{acao.contra_medida}</div>
+                          {acao.causa && <div className="text-[11px] text-slate-400 truncate italic">Causa: {acao.causa}</div>}
+                        </td>
+                        <td className="p-3.5 font-medium">{acao.responsavel_acao}</td>
+                        <td className="p-3.5 font-semibold">{formatDateBR(acao.data_planejada)}</td>
+                        <td className="p-3.5 font-medium">{acao.tipo_acao}</td>
+                        <td className="p-3.5">
+                          <div className="flex gap-1 flex-wrap">
+                            {acao.yokoten === 'SIM' && <span className="px-1.5 py-0.2 bg-purple-50 text-purple-700 text-[10px] rounded font-semibold border border-purple-200">Yokoten</span>}
+                            {acao.poka_yoke === 'SIM' && <span className="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 text-[10px] rounded font-semibold border border-emerald-200">Poka-Yoke</span>}
+                            {acao.eight_d_seven_d && <span className="px-1.5 py-0.2 bg-slate-100 text-slate-600 text-[10px] rounded font-semibold">{acao.eight_d_seven_d}</span>}
+                          </div>
+                        </td>
+                        <td className="p-3.5">
+                          <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
+                            status === 'Validado' ? 'bg-emerald-100 text-emerald-800' :
+                            status === 'Concluído' ? 'bg-amber-100 text-amber-800' :
+                            status === 'Atrasado' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
+                          }`}>
+                            {status}
                           </span>
-                        ) : '-'}
-                      </td>
-                      <td className="p-3.5 max-w-xs">
-                        <div className="font-semibold text-slate-900 leading-snug">{acao.contra_medida}</div>
-                        {acao.causa && <div className="text-[11px] text-slate-400 truncate italic">Causa: {acao.causa}</div>}
-                      </td>
-                      <td className="p-3.5 font-medium">{acao.responsavel_acao}</td>
-                      <td className="p-3.5 font-semibold">{formatDateBR(acao.data_planejada)}</td>
-                      <td className="p-3.5">{formatDateBR(acao.data_acompanhamento)}</td>
-                      <td className="p-3.5 font-medium">{acao.tipo_acao}</td>
-                      <td className="p-3.5">
-                        <div className="flex gap-1 flex-wrap">
-                          {acao.yokoten === 'SIM' && <span className="px-1.5 py-0.2 bg-purple-50 text-purple-700 text-[10px] rounded font-semibold border border-purple-200">Yokoten</span>}
-                          {acao.poka_yoke === 'SIM' && <span className="px-1.5 py-0.2 bg-emerald-50 text-emerald-700 text-[10px] rounded font-semibold border border-emerald-200">Poka-Yoke</span>}
-                          {acao.eight_d_seven_d && <span className="px-1.5 py-0.2 bg-slate-100 text-slate-600 text-[10px] rounded font-semibold">{acao.eight_d_seven_d}</span>}
-                        </div>
-                      </td>
-                      <td className="p-3.5">
-                        <span className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${
-                          status === 'Validado' ? 'bg-emerald-100 text-emerald-800' :
-                          status === 'Concluído' ? 'bg-amber-100 text-amber-800' :
-                          status === 'Atrasado' ? 'bg-rose-100 text-rose-800' : 'bg-blue-100 text-blue-800'
-                        }`}>
-                          {status}
-                        </span>
-                      </td>
-                      <td className="p-3.5 text-right">
-                        <div className="flex items-center justify-end gap-1.5">
-                          <button
-                            type="button"
-                            onClick={() => handleOpenEditAcaoModal(acao)}
-                            className="p-1 rounded text-slate-400 hover:text-blue-600"
-                            title="Editar"
-                          >
-                            <Edit3 className="w-3.5 h-3.5" />
-                          </button>
-                          <button
-                            type="button"
-                            onClick={() => {
-                              setAcaoAtiva(acao);
-                              setMotivoExclusao('');
-                              setModalExcluirAcaoOpen(true);
-                            }}
-                            className="p-1 rounded text-slate-400 hover:text-rose-600"
-                            title="Excluir"
-                          >
-                            <Trash2 className="w-3.5 h-3.5" />
-                          </button>
-                          {status === 'Concluído' ? (
+                        </td>
+                        <td className="p-3.5 text-right">
+                          <div className="flex items-center justify-end gap-1.5">
+                            <button
+                              type="button"
+                              onClick={() => handleOpenEditAcaoModal(acao)}
+                              className="p-1 rounded text-slate-400 hover:text-blue-600"
+                              title="Editar"
+                            >
+                              <Edit3 className="w-3.5 h-3.5" />
+                            </button>
                             <button
                               type="button"
                               onClick={() => {
                                 setAcaoAtiva(acao);
-                                setModalValidarOpen(true);
+                                setMotivoExclusao('');
+                                setModalExcluirAcaoOpen(true);
                               }}
-                              className="text-xs text-emerald-600 font-semibold hover:underline ml-1"
+                              className="p-1 rounded text-slate-400 hover:text-rose-600"
+                              title="Excluir"
                             >
-                              Validar
+                              <Trash2 className="w-3.5 h-3.5" />
                             </button>
-                          ) : status !== 'Validado' ? (
-                            <button
-                              type="button"
-                              onClick={() => {
-                                setAcaoAtiva(acao);
-                                setModalConcluirOpen(true);
-                              }}
-                              className="text-xs text-blue-600 font-semibold hover:underline ml-1"
-                            >
-                              Concluir
-                            </button>
-                          ) : (
-                            <span className="text-slate-400 text-xs">Eficaz</span>
-                          )}
-                        </div>
-                      </td>
-                    </tr>
-                  );
-                })
-              )}
-            </tbody>
-          </table>
+                            {status === 'Concluído' ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAcaoAtiva(acao);
+                                  setModalValidarOpen(true);
+                                }}
+                                className="text-xs text-emerald-600 font-semibold hover:underline ml-1"
+                              >
+                                Validar
+                              </button>
+                            ) : status !== 'Validado' ? (
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  setAcaoAtiva(acao);
+                                  setModalConcluirOpen(true);
+                                }}
+                                className="text-xs text-blue-600 font-semibold hover:underline ml-1"
+                              >
+                                Concluir
+                              </button>
+                            ) : (
+                              <span className="text-slate-400 text-xs">Eficaz</span>
+                            )}
+                          </div>
+                        </td>
+                      </tr>
+                    );
+                  })
+                )}
+              </tbody>
+            </table>
+          </div>
+
+          {/* Paginação Inferior da Tabela */}
+          <div className="p-3.5 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3 text-xs text-slate-600">
+            <span>
+              Exibindo <strong>{(paginaTabela - 1) * ITENS_POR_PAGINA_TABELA + 1}</strong> a <strong>{Math.min(paginaTabela * ITENS_POR_PAGINA_TABELA, acoesFiltradas.length)}</strong> de <strong>{acoesFiltradas.length}</strong> ações filtradas
+            </span>
+
+            <div className="flex items-center gap-1">
+              <button
+                type="button"
+                disabled={paginaTabela === 1}
+                onClick={() => setPaginaTabela(1)}
+                className="p-1 rounded bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40"
+                title="Primeira página"
+              >
+                <ChevronsLeft className="w-4 h-4" />
+              </button>
+              <button
+                type="button"
+                disabled={paginaTabela === 1}
+                onClick={() => setPaginaTabela(p => Math.max(1, p - 1))}
+                className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 font-semibold"
+              >
+                Anterior
+              </button>
+              <span className="px-2 font-bold text-slate-800">
+                {paginaTabela} de {totalPaginasTabela}
+              </span>
+              <button
+                type="button"
+                disabled={paginaTabela === totalPaginasTabela}
+                onClick={() => setPaginaTabela(p => Math.min(totalPaginasTabela, p + 1))}
+                className="px-2 py-1 rounded bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40 font-semibold"
+              >
+                Próxima
+              </button>
+              <button
+                type="button"
+                disabled={paginaTabela === totalPaginasTabela}
+                onClick={() => setPaginaTabela(totalPaginasTabela)}
+                className="p-1 rounded bg-white border border-slate-200 hover:bg-slate-50 disabled:opacity-40"
+                title="Última página"
+              >
+                <ChevronsRight className="w-4 h-4" />
+              </button>
+            </div>
+          </div>
         </div>
       )}
 
       {/* ========================================================================= */}
-      {/* MODAL 1: Novo Plano de Ação Mestre (Formactionplan do Power Apps)        */}
+      {/* MODAIS (MANTIDOS E COMPLETOS)                                             */}
       {/* ========================================================================= */}
+      
+      {/* MODAL 1: Novo Plano de Ação Mestre */}
       {modalNovoPlanoOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 border border-slate-200 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
@@ -913,8 +1160,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
             </div>
 
             <div className="flex flex-col gap-4">
-              
-              {/* Linha 1: Responsável pela abertura & Vínculo 8D */}
               <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Responsável pela Abertura *</label>
@@ -938,7 +1183,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 </div>
               </div>
 
-              {/* Linha 2: Indicador Estratégico & Subindicadores */}
               <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Indicador / Prog. Estratégico *</label>
@@ -978,7 +1222,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 </div>
               </div>
 
-              {/* Linha 3: Posto, Produto, Setor & Prioridade */}
               <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Posto de Trabalho</label>
@@ -1024,7 +1267,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 </div>
               </div>
 
-              {/* Linha 4: Descrição do Problema ou Oportunidade */}
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
                   Descrição, Problema ou Oportunidade *
@@ -1038,7 +1280,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 />
               </div>
 
-              {/* Linha 5: Foto Auxiliar */}
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
                   Foto Auxiliar / Evidência Inicial (foto_acao)
@@ -1051,7 +1292,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                   className="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
                 />
               </div>
-
             </div>
 
             <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-100">
@@ -1074,9 +1314,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 2: Nova / Edição de Ação (Formnovaacao do Power Apps - 25 Campos)  */}
-      {/* ========================================================================= */}
+      {/* MODAL 2: Nova / Edição de Ação (25 campos) */}
       {modalNovaAcaoOpen && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-2xl w-full p-6 border border-slate-200 animate-in fade-in zoom-in-95 max-h-[90vh] overflow-y-auto">
@@ -1099,8 +1337,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
             </div>
 
             <div className="flex flex-col gap-4">
-              
-              {/* Seção 1: Causa Raiz e Contramedida */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col gap-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   1. Definição da Causa & Contramedida
@@ -1146,7 +1382,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 </div>
               </div>
 
-              {/* Seção 2: Responsável e Cronograma */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col gap-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   2. Responsáveis & Prazos
@@ -1172,7 +1407,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Email do Supervisor (Escalonamento)</label>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">Email do Supervisor</label>
                     <input
                       type="email"
                       value={formNovaAcao.email_super || ''}
@@ -1193,7 +1428,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                     />
                   </div>
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Data de Acompanhamento Intermediário</label>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">Data de Acompanhamento</label>
                     <input
                       type="date"
                       value={formNovaAcao.data_acompanhamento || ''}
@@ -1204,7 +1439,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 </div>
               </div>
 
-              {/* Seção 3: Parâmetros de Engenharia da Qualidade */}
               <div className="p-3.5 bg-slate-50 border border-slate-200 rounded-xl flex flex-col gap-3">
                 <span className="text-[11px] font-bold uppercase tracking-wider text-slate-500">
                   3. Parâmetros de Engenharia da Qualidade
@@ -1226,14 +1460,14 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Yokoten (Abrangência)?</label>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">Yokoten?</label>
                     <select
                       value={formNovaAcao.yokoten}
                       onChange={e => setFormNovaAcao({ ...formNovaAcao, yokoten: e.target.value })}
                       className="w-full text-xs p-2 bg-white border border-slate-200 rounded-xl"
                     >
                       <option value="NÃO">NÃO</option>
-                      <option value="SIM">SIM (Aplica a outras linhas)</option>
+                      <option value="SIM">SIM (Abrangência)</option>
                     </select>
                   </div>
 
@@ -1245,7 +1479,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                       className="w-full text-xs p-2 bg-white border border-slate-200 rounded-xl"
                     >
                       <option value="NÃO">NÃO</option>
-                      <option value="SIM">SIM (Dispositivo à prova de erro)</option>
+                      <option value="SIM">SIM (Dispositivo)</option>
                     </select>
                   </div>
 
@@ -1264,17 +1498,17 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Documento 8D/7D a Atualizar</label>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">Doc. 8D/7D a Atualizar</label>
                     <select
                       value={formNovaAcao.eight_d_seven_d}
                       onChange={e => setFormNovaAcao({ ...formNovaAcao, eight_d_seven_d: e.target.value })}
                       className="w-full text-xs p-2 bg-white border border-slate-200 rounded-xl font-medium"
                     >
                       <option value="IT">IT (Instrução de Trabalho)</option>
-                      <option value="FMEA">FMEA (Análise de Modos de Falha)</option>
+                      <option value="FMEA">FMEA</option>
                       <option value="PCP">PCP (Plano de Controle)</option>
                       <option value="FOLHA DE PROCESSO">FOLHA DE PROCESSO</option>
-                      <option value="DESENHO">DESENHO / ESPECIFICAÇÃO</option>
+                      <option value="DESENHO">DESENHO</option>
                     </select>
                   </div>
 
@@ -1285,25 +1519,24 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                       onChange={e => setFormNovaAcao({ ...formNovaAcao, evidencia_obrigatoria: e.target.value as any })}
                       className="w-full text-xs p-2 bg-white border border-slate-200 rounded-xl"
                     >
-                      <option value="SIM">SIM (Exige anexo/comentário)</option>
+                      <option value="SIM">SIM</option>
                       <option value="NÃO">NÃO</option>
                     </select>
                   </div>
 
                   <div>
-                    <label className="text-xs font-semibold text-slate-700 block mb-1">Validação da Qualidade?</label>
+                    <label className="text-xs font-semibold text-slate-700 block mb-1">Validação Qualidade?</label>
                     <select
                       value={formNovaAcao.validacao_acao}
                       onChange={e => setFormNovaAcao({ ...formNovaAcao, validacao_acao: e.target.value as any })}
                       className="w-full text-xs p-2 bg-white border border-slate-200 rounded-xl"
                     >
-                      <option value="SIM">SIM (Auditoria pela Qualidade)</option>
-                      <option value="NÃO">NÃO (Auto-homologação)</option>
+                      <option value="SIM">SIM (Auditoria)</option>
+                      <option value="NÃO">NÃO</option>
                     </select>
                   </div>
                 </div>
               </div>
-
             </div>
 
             <div className="flex justify-end gap-2 mt-6 pt-4 border-t border-slate-100">
@@ -1326,9 +1559,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 3: Concluir Ação pelo Responsável (Formconcacao do Power Apps)      */}
-      {/* ========================================================================= */}
+      {/* MODAL 3: Concluir Ação */}
       {modalConcluirOpen && acaoAtiva && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-md w-full p-6 border border-slate-200 animate-in fade-in zoom-in-95">
@@ -1347,14 +1578,6 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                   Causa: {acaoAtiva.causa}
                 </div>
               )}
-              <div className="mt-1 flex items-center gap-2">
-                <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-700 font-semibold">
-                  Validação Qualidade: {acaoAtiva.validacao_acao || 'SIM'}
-                </span>
-                <span className="px-2 py-0.5 rounded text-[10px] bg-slate-200 text-slate-700 font-semibold">
-                  Evidência Obrigatória: {acaoAtiva.evidencia_obrigatoria || 'SIM'}
-                </span>
-              </div>
             </div>
 
             <div className="flex flex-col gap-3">
@@ -1370,13 +1593,13 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
-                  Relato da Evidência Implementada (comentarios_evidencia) *
+                  Relato da Evidência Implementada *
                 </label>
                 <textarea
                   rows={3}
                   value={formConclusao.comentarios_evidencia}
                   onChange={e => setFormConclusao({ ...formConclusao, comentarios_evidencia: e.target.value })}
-                  placeholder="Descreva o que foi alterado na máquina/processo, laudos de medição e validação prática..."
+                  placeholder="Descreva o que foi alterado na máquina/processo, ensaios realizados..."
                   className="w-full text-xs p-2.5 bg-slate-50 border border-slate-200 rounded-xl"
                 />
               </div>
@@ -1388,7 +1611,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
                 <div className="border border-dashed border-slate-300 rounded-xl p-3 text-center bg-slate-50/50 flex flex-col items-center justify-center gap-1 cursor-pointer hover:bg-slate-50 transition">
                   <UploadCloud className="w-5 h-5 text-slate-400" />
                   <span className="text-[11px] font-semibold text-blue-600">Clique para selecionar arquivos</span>
-                  <span className="text-[10px] text-slate-400">Formatos aceitos: JPG, PNG, PDF</span>
+                  <span className="text-[10px] text-slate-400">JPG, PNG, PDF</span>
                 </div>
               </div>
             </div>
@@ -1413,9 +1636,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 4: Validar Ação pela Qualidade (Formvalidaracao do Power Apps)      */}
-      {/* ========================================================================= */}
+      {/* MODAL 4: Validar Ação */}
       {modalValidarOpen && acaoAtiva && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl shadow-xl max-w-lg w-full p-6 border border-slate-200 animate-in fade-in zoom-in-95">
@@ -1433,7 +1654,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
               </div>
               {acaoAtiva.comentarios_evidencia && (
                 <div className="mt-1 pt-1 border-t border-slate-200/60">
-                  <span className="font-bold text-slate-700 block">Evidência Apresentada pelo Responsável:</span>
+                  <span className="font-bold text-slate-700 block">Evidência Apresentada:</span>
                   <p className="text-slate-700 italic">"{acaoAtiva.comentarios_evidencia}"</p>
                 </div>
               )}
@@ -1468,7 +1689,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
 
               <div>
                 <label className="text-xs font-semibold text-slate-700 block mb-1">
-                  Parecer da Validação Técnica (comentarios_validacao) *
+                  Parecer da Validação Técnica *
                 </label>
                 <textarea
                   rows={3}
@@ -1504,9 +1725,7 @@ export const PlanoAcaoView: React.FC<PlanoAcaoViewProps> = ({
         </div>
       )}
 
-      {/* ========================================================================= */}
-      {/* MODAL 5: Exclusão Auditada de Ação (Exclacao do Power Apps)               */}
-      {/* ========================================================================= */}
+      {/* MODAL 5: Exclusão Auditada */}
       {modalExcluirAcaoOpen && acaoAtiva && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/50 backdrop-blur-xs p-4">
           <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full p-6 border border-rose-200 animate-in fade-in zoom-in-95">

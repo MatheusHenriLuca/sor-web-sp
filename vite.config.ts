@@ -2,6 +2,8 @@ import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
 import { defineConfig, loadEnv } from 'vite';
 import type { Plugin } from 'vite';
+import fs from 'node:fs';
+import path from 'node:path';
 
 // ============================================================================
 // MICROSOFT GRAPH / SHAREPOINT ONLINE DIRECT PROXY MIDDLEWARE
@@ -10,6 +12,11 @@ import type { Plugin } from 'vite';
 function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
   let cachedToken: string | null = null;
   let tokenExpiresAt = 0;
+
+  const CACHE_DIR = path.resolve(process.cwd(), '.sp_cache');
+  if (!fs.existsSync(CACHE_DIR)) {
+    try { fs.mkdirSync(CACHE_DIR, { recursive: true }); } catch (_) {}
+  }
 
   async function getAccessToken(): Promise<string> {
     const isPlaceholder = (val?: string) => !val || val.startsWith('your-') || val === 'undefined';
@@ -51,14 +58,14 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
     return cachedToken || '';
   }
 
-  // Cache em memória no servidor Vite para acesso instantâneo sem sobrecarregar o Microsoft Graph
+  // Cache em memória e em disco para acesso instantâneo sem sobrecarregar o Microsoft Graph
   const dataCache: Record<string, { items: any[]; timestamp: number }> = {};
   const inFlightRequests: Record<string, Promise<any[]> | null> = {};
-  const CACHE_TTL_MS = 10 * 60 * 1000; // 10 minutos de cache em memória
+  const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutos de cache em memória
 
   /**
    * Coleta TODOS os itens do SharePoint através da paginação @odata.nextLink do Microsoft Graph.
-   * Quebra o limite padrão de 999 itens e retorna a base integral (4.000+ peças, 4.900+ RNCs).
+   * Quebra o limite padrão de 999 itens e retorna a base integral (4.000+ peças, 4.900+ RNCs, 9.200+ Ações).
    */
   async function fetchAllGraphPages(
     initialUrl: string, 
@@ -66,11 +73,32 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
     cacheKey?: string, 
     forceRefresh = false
   ): Promise<any[]> {
-    if (!forceRefresh && cacheKey && dataCache[cacheKey]) {
-      const entry = dataCache[cacheKey];
-      if (Date.now() - entry.timestamp < CACHE_TTL_MS && entry.items.length > 0) {
-        console.log(`[SP Proxy] Cache HIT para '${cacheKey}': ${entry.items.length} itens retornados instantaneamente.`);
-        return entry.items;
+    if (!forceRefresh && cacheKey) {
+      if (dataCache[cacheKey]) {
+        const entry = dataCache[cacheKey];
+        if (Date.now() - entry.timestamp < CACHE_TTL_MS && entry.items.length > 0) {
+          console.log(`[SP Proxy] Memory cache HIT para '${cacheKey}': ${entry.items.length} itens retornados instantaneamente.`);
+          return entry.items;
+        }
+      }
+
+      // Verificação de cache em disco local para carregamento instantâneo
+      const diskFilePath = path.join(CACHE_DIR, `${cacheKey}.json`);
+      if (fs.existsSync(diskFilePath)) {
+        try {
+          const raw = fs.readFileSync(diskFilePath, 'utf-8');
+          const parsed = JSON.parse(raw);
+          if (Array.isArray(parsed) && parsed.length > 0) {
+            dataCache[cacheKey] = {
+              items: parsed,
+              timestamp: Date.now()
+            };
+            console.log(`[SP Proxy] Disk cache HIT para '${cacheKey}': ${parsed.length} itens carregados do disco em ms.`);
+            return parsed;
+          }
+        } catch (e) {
+          console.error(`[SP Proxy] Falha ao ler cache em disco para '${cacheKey}':`, e);
+        }
       }
     }
 
@@ -119,6 +147,12 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
           items: allItems,
           timestamp: Date.now()
         };
+        try {
+          const diskFilePath = path.join(CACHE_DIR, `${cacheKey}.json`);
+          fs.writeFileSync(diskFilePath, JSON.stringify(allItems));
+        } catch (e) {
+          console.error(`[SP Proxy] Falha ao gravar cache em disco para '${cacheKey}':`, e);
+        }
       }
 
       return allItems;
