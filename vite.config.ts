@@ -358,8 +358,13 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
               if (!val) return false;
               const cleanVal = String(val).trim().toUpperCase();
               const target = id8d.toUpperCase();
-              return cleanVal === target || cleanVal.endsWith(`- ${target}`) || cleanVal.includes(target);
+              const numOnly = target.replace(/^[A-Z]+\s*-\s*/, '').trim();
+              return cleanVal === target || cleanVal.endsWith(`- ${numOnly}`) || cleanVal === numOnly || cleanVal.includes(target);
             };
+
+            const rncsAll = dataCache['rncs']?.items || [];
+            const rncNum = id8d.replace(/^[A-Za-z]+\s*-\s*/, '').trim();
+            const rncItem = rncsAll.find(it => String(it.fields?.id || it.id) === rncNum);
 
             const participantesItem = partAll.find(it => matchId(it.fields?.id8d || it.fields?.id_8d));
             const ishikawaItems = ishiAll.filter(it => matchId(it.fields?.id8d || it.fields?.id_8d));
@@ -375,6 +380,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
 
             res.end(JSON.stringify({
               id8d,
+              rnc: rncItem ? { id: rncItem.id, ...rncItem.fields } : null,
               participantes: participantesItem ? { id: participantesItem.id, ...participantesItem.fields } : null,
               ishikawa: ishikawaItems.map(it => ({ id: it.id, ...it.fields })),
               henkaten: henkatenItem ? { id: henkatenItem.id, ...henkatenItem.fields } : null,

@@ -28,6 +28,7 @@ import {
 import { UsuarioQualidade, EightDDetails, IshikawaItem, PlanoAcaoItem } from '../types';
 import { eightDService } from '../services/eightDService';
 import { actionPlanService } from '../services/actionPlanService';
+import { spStore } from '../services/sharepointService';
 import { formatDateBR } from '../utils/date';
 
 interface Gestao8DViewProps {
@@ -68,7 +69,12 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
   const [causaPreDefinida, setCausaPreDefinida] = useState('');
 
   // Formulário Nova Causa Ishikawa
-  const [novaCausa, setNovaCausa] = useState({
+  const [novaCausa, setNovaCausa] = useState<{
+    seisms: string;
+    descricao_causa: string;
+    ocnd: 'Ocorrência' | 'Não Detecção';
+    okng: 'OK' | 'NG';
+  }>({
     seisms: 'Método',
     descricao_causa: '',
     ocnd: 'Ocorrência',
@@ -110,22 +116,41 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
   const load8DList = async (forceRefresh = false) => {
     try {
       setLoadingList(true);
-      const list = await eightDService.getRNCs8D(forceRefresh);
+      let list: any[] = [];
+      try {
+        list = await eightDService.getRNCs8D(forceRefresh);
+      } catch (apiErr) {
+        console.warn('Endpoint /api/sp/8d/rncs indisponível, usando cache local:', apiErr);
+      }
+      
+      // Fallback robusto para RNCs locais já sincronizadas no spStore
+      if (!list || list.length === 0) {
+        const localList = spStore.getRNCs();
+        list = localList.filter(r => {
+          const abrir = String(r.abrir8D || '').trim().toLowerCase();
+          const local = String(r.local8d || '').trim().toUpperCase();
+          const abrirRnc = String(r.abrirRnc || '').trim().toLowerCase();
+          return abrir === 'sim' || local === 'APP' || abrirRnc.includes('sim');
+        });
+      }
+
       setRncs8D(list);
       
-      // Se tiver rncId ou initialId8d, seleciona automaticamente
-      if (initialId8d) {
-        select8D(initialId8d);
-      } else if (rncId) {
-        const found = list.find((it: any) => String(it.fields?.id || it.id) === String(rncId));
-        if (found) {
-          const autoId8d = getRncId8d(found);
-          select8D(autoId8d, found);
+      if (list.length > 0) {
+        // Se tiver rncId ou initialId8d, seleciona automaticamente
+        if (initialId8d) {
+          select8D(initialId8d);
+        } else if (rncId) {
+          const found = list.find((it: any) => String(it.fields?.id || it.id) === String(rncId));
+          if (found) {
+            const autoId8d = getRncId8d(found);
+            select8D(autoId8d, found);
+          }
+        } else {
+          // Seleciona a mais recente por padrão
+          const autoId8d = getRncId8d(list[0]);
+          select8D(autoId8d, list[0]);
         }
-      } else if (list.length > 0) {
-        // Seleciona a mais recente por padrão
-        const autoId8d = getRncId8d(list[0]);
-        select8D(autoId8d, list[0]);
       }
     } catch (err: any) {
       setFeedbackMsg({ type: 'error', text: err.message || 'Erro ao carregar RNCs do 8D' });
@@ -135,8 +160,8 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
   };
 
   const getRncId8d = (rncItem: any): string => {
-    const f = rncItem.fields || {};
-    const classif = String(f.Classifica_x00e7__x00e3_o || f.classificacao || 'Qualidade').trim();
+    const f = rncItem.fields || rncItem;
+    const classif = String(f.Classifica_x00e7__x00e3_o || f.classificacao || f.tipoRnc || 'Qualidade').trim();
     const prefix = classif ? classif.charAt(0).toUpperCase() : 'Q';
     const num = f.id || rncItem.id || '0';
     return `${prefix} - ${num}`;
@@ -147,17 +172,28 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
       setId8d(targetId8d);
       setLoadingDetails(true);
       
-      if (!rncItem) {
-        const found = rncs8D.find((it: any) => getRncId8d(it) === targetId8d);
-        setSelectedRnc(found || null);
-      } else {
-        setSelectedRnc(rncItem);
-      }
+      const itemToUse = rncItem || rncs8D.find((it: any) => getRncId8d(it) === targetId8d) || null;
+      setSelectedRnc(itemToUse);
 
-      const det = await eightDService.getEightDDetails(targetId8d);
-      setDetails(det);
+      try {
+        const det = await eightDService.getEightDDetails(targetId8d);
+        setDetails(det);
+      } catch (detErr) {
+        console.warn(`Erro ao carregar detalhes completos para ${targetId8d}:`, detErr);
+        // Cria estrutura mínima de detalhes para manter a UI operacional
+        setDetails({
+          id8d: targetId8d,
+          rnc: itemToUse?.fields || itemToUse || null,
+          participantes: null,
+          ishikawa: [],
+          henkaten: null,
+          entrevista: null,
+          plano: null,
+          acoes: []
+        });
+      }
     } catch (err: any) {
-      setFeedbackMsg({ type: 'error', text: err.message || `Erro ao carregar detalhes do 8D ${targetId8d}` });
+      setFeedbackMsg({ type: 'error', text: err.message || `Erro ao selecionar 8D ${targetId8d}` });
     } finally {
       setLoadingDetails(false);
     }
@@ -168,9 +204,9 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
     if (!searchRnc) return rncs8D;
     const q = searchRnc.toLowerCase();
     return rncs8D.filter(it => {
-      const f = it.fields || {};
+      const f = it.fields || it;
       const idStr = String(f.id || it.id);
-      const peca = String(f.Pe_x00e7_a || f.produto || f.Title || '').toLowerCase();
+      const peca = String(f.Pe_x00e7_a || f.componente || f.produto || f.Title || f.title || '').toLowerCase();
       const cliente = String(f.Cliente || f.cliente || '').toLowerCase();
       return idStr.includes(q) || peca.includes(q) || cliente.includes(q);
     });
@@ -356,6 +392,14 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
             <span className="text-xs font-bold uppercase tracking-wider text-slate-500">
               RNCs com 8D Aberto ({filteredRncs.length})
             </span>
+            <button
+              type="button"
+              onClick={() => load8DList(true)}
+              title="Atualizar RNCs do SharePoint"
+              className="p-1 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-blue-600 transition cursor-pointer"
+            >
+              <RotateCw className={`w-3.5 h-3.5 ${loadingList ? 'animate-spin' : ''}`} />
+            </button>
           </div>
 
           <div className="relative mt-3 mb-3">
@@ -381,12 +425,18 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
               </div>
             ) : (
               filteredRncs.map(it => {
-                const f = it.fields || {};
+                const f = it.fields || it;
                 const targetId = getRncId8d(it);
                 const isSelected = targetId === id8d;
+                const pecaNome = f.Pe_x00e7_a || f.componente || f.produto || f.Title || f.title || 'Peça não informada';
+                const clienteNome = f.Cliente || f.cliente || 'Gestamp';
+                const dataFormatada = f.Data_x0020_da_x0020_ocorr_x00ea_ 
+                  ? formatDateBR(f.Data_x0020_da_x0020_ocorr_x00ea_) 
+                  : (f.dataOcorrencia ? formatDateBR(f.dataOcorrencia) : '');
+
                 return (
                   <div
-                    key={it.id}
+                    key={it.id || f.id}
                     onClick={() => select8D(targetId, it)}
                     className={`p-3 rounded-xl border text-left cursor-pointer transition-all ${
                       isSelected 
@@ -403,11 +453,11 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
                       </span>
                     </div>
                     <div className="text-xs font-semibold text-slate-700 truncate">
-                      {f.Pe_x00e7_a || f.produto || f.Title || 'Peça não informada'}
+                      {pecaNome}
                     </div>
                     <div className="text-[11px] text-slate-500 flex items-center justify-between mt-1">
-                      <span>{f.Cliente || f.cliente || 'Gestamp'}</span>
-                      <span>{f.Data_x0020_da_x0020_ocorr_x00ea_ ? formatDateBR(f.Data_x0020_da_x0020_ocorr_x00ea_) : ''}</span>
+                      <span>{clienteNome}</span>
+                      <span>{dataFormatada}</span>
                     </div>
                   </div>
                 );
@@ -492,43 +542,56 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
                       </button>
                     </div>
 
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                        <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Peça / Produto</span>
-                        <p className="text-sm font-bold text-slate-900 mt-0.5">
-                          {selectedRnc?.fields?.Pe_x00e7_a || selectedRnc?.fields?.produto || 'N/A'}
-                        </p>
-                        <span className="text-xs text-slate-500 block mt-1">
-                          Código: {selectedRnc?.fields?.Title || 'Sem código'}
-                        </span>
-                      </div>
+                    {(() => {
+                      const rncF = selectedRnc?.fields || selectedRnc || {};
+                      const pecaLabel = rncF.Componente || rncF.Pe_x00e7_a || rncF.componente || rncF.produto || rncF.Produto1 || 'N/A';
+                      const prodLabel = rncF.Produto1 || rncF.Title || rncF.title || (rncF.id ? `RNC #${rncF.id}` : 'Sem código');
+                      const clienteLabel = rncF.cliente_res || rncF.Cliente || rncF.cliente || 'Gestamp';
+                      const setorLabel = rncF.Origem_x0020_do_x0020_8D_x0020_i || rncF.Setor_x0020_de_x0020_origem || rncF.classificacaoSetor || rncF.setor || 'N/A';
+                      const descProblema = rncF.field_11 || rncF.Descri_x00e7__x00e3_o_x0020_do_x || rncF.detalhamentoOcorrencia || rncF.descricaoProblema || 'Sem descrição cadastrada.';
 
-                      <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                        <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Cliente / Destino</span>
-                        <p className="text-sm font-bold text-slate-900 mt-0.5">
-                          {selectedRnc?.fields?.Cliente || selectedRnc?.fields?.cliente || 'Gestamp'}
-                        </p>
-                        <span className="text-xs text-slate-500 block mt-1">
-                          Setor: {selectedRnc?.fields?.Setor_x0020_de_x0020_origem || selectedRnc?.fields?.setor || 'N/A'}
-                        </span>
-                      </div>
+                      return (
+                        <>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Peça / Produto</span>
+                              <p className="text-sm font-bold text-slate-900 mt-0.5 truncate">
+                                {pecaLabel}
+                              </p>
+                              <span className="text-xs text-slate-500 block mt-1">
+                                Produto / Código: {prodLabel}
+                              </span>
+                            </div>
 
-                      <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                        <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Status do 8D</span>
-                        <div className="mt-1 flex items-center gap-2">
-                          <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
-                            {details.participantes?.validar_8d || 'Em Andamento'}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
+                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Cliente / Destino</span>
+                              <p className="text-sm font-bold text-slate-900 mt-0.5">
+                                {clienteLabel}
+                              </p>
+                              <span className="text-xs text-slate-500 block mt-1">
+                                Setor: {setorLabel}
+                              </span>
+                            </div>
 
-                    <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
-                      <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Descrição do Defeito</span>
-                      <p className="text-sm text-slate-800 mt-1">
-                        {selectedRnc?.fields?.Descri_x00e7__x00e3_o_x0020_do_x || selectedRnc?.fields?.detalhamentoOcorrencia || 'Sem descrição cadastrada.'}
-                      </p>
-                    </div>
+                            <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                              <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Status do 8D</span>
+                              <div className="mt-1 flex items-center gap-2">
+                                <span className="px-2.5 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-semibold">
+                                  {details.participantes?.validar_8d || 'Em Andamento'}
+                                </span>
+                              </div>
+                            </div>
+                          </div>
+
+                          <div className="p-4 bg-slate-50 rounded-xl border border-slate-200/80">
+                            <span className="text-[11px] uppercase tracking-wider text-slate-400 font-semibold">Descrição do Defeito</span>
+                            <p className="text-sm text-slate-800 mt-1">
+                              {descProblema}
+                            </p>
+                          </div>
+                        </>
+                      );
+                    })()}
 
                     <div className="flex justify-end pt-4">
                       <button
