@@ -218,6 +218,7 @@ export function App() {
                 onNavigate={handleNavigate}
                 currentUser={currentUser}
                 idprograma={screenParams?.idprograma}
+                initialPlanoId={screenParams?.planoId}
               />
             )}
           </div>

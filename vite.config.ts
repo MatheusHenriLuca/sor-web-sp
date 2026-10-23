@@ -63,6 +63,16 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
   const inFlightRequests: Record<string, Promise<any[]> | null> = {};
   const CACHE_TTL_MS = 15 * 60 * 1000; // 15 minutos de cache em memória
 
+  function invalidateCache(key: string) {
+    delete dataCache[key];
+    try {
+      const diskFilePath = path.join(CACHE_DIR, `${key}.json`);
+      if (fs.existsSync(diskFilePath)) {
+        fs.unlinkSync(diskFilePath);
+      }
+    } catch (_) {}
+  }
+
   /**
    * Coleta TODOS os itens do SharePoint através da paginação @odata.nextLink do Microsoft Graph.
    * Quebra o limite padrão de 999 itens e retorna a base integral (4.000+ peças, 4.900+ RNCs, 9.200+ Ações).
@@ -550,7 +560,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
                 body: JSON.stringify({ fields: payload })
               });
               const data = await gRes.json();
-              delete dataCache['sp_planos'];
+              invalidateCache('sp_planos');
               res.end(JSON.stringify(data));
             });
             return;
@@ -571,7 +581,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
                 body: JSON.stringify(payload)
               });
               const data = await gRes.json();
-              delete dataCache['sp_planos'];
+              invalidateCache('sp_planos');
               res.end(JSON.stringify(data));
             });
             return;
@@ -586,7 +596,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
               method: 'DELETE',
               headers: { 'Authorization': `Bearer ${token}` }
             });
-            delete dataCache['sp_planos'];
+            invalidateCache('sp_planos');
             res.statusCode = gRes.status;
             res.end(JSON.stringify({ success: gRes.ok }));
             return;
@@ -628,7 +638,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
                 body: JSON.stringify({ fields: payload })
               });
               const data = await gRes.json();
-              delete dataCache['sp_acoes'];
+              invalidateCache('sp_acoes');
               res.end(JSON.stringify(data));
             });
             return;
@@ -649,7 +659,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
                 body: JSON.stringify(payload)
               });
               const data = await gRes.json();
-              delete dataCache['sp_acoes'];
+              invalidateCache('sp_acoes');
               res.end(JSON.stringify(data));
             });
             return;
@@ -678,7 +688,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
                 body: JSON.stringify(fieldsToUpdate)
               });
               const data = await gRes.json();
-              delete dataCache['sp_acoes'];
+              invalidateCache('sp_acoes');
               res.end(JSON.stringify(data));
             });
             return;
@@ -708,7 +718,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
                 body: JSON.stringify(fieldsToUpdate)
               });
               const data = await gRes.json();
-              delete dataCache['sp_acoes'];
+              invalidateCache('sp_acoes');
               res.end(JSON.stringify(data));
             });
             return;
@@ -723,7 +733,7 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
               method: 'DELETE',
               headers: { 'Authorization': `Bearer ${token}` }
             });
-            delete dataCache['sp_acoes'];
+            invalidateCache('sp_acoes');
             res.statusCode = gRes.status;
             res.end(JSON.stringify({ success: gRes.ok }));
             return;
