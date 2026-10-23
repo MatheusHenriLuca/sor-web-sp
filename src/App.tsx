@@ -10,6 +10,8 @@ import { RegistroProtCliView } from './views/RegistroProtCliView';
 import { RastreabilidadeView } from './views/RastreabilidadeView';
 import { FalhaEntregaView } from './views/FalhaEntregaView';
 import { CadastroUsuariosView } from './views/CadastroUsuariosView';
+import { Gestao8DView } from './views/Gestao8DView';
+import { PlanoAcaoView } from './views/PlanoAcaoView';
 import { SharePointSyncModal } from './components/SharePointSyncModal';
 import { AppHeader } from './components/AppHeader';
 import { AppSidebar } from './components/AppSidebar';
@@ -199,6 +201,23 @@ export function App() {
               <CadastroUsuariosView 
                 onNavigate={handleNavigate}
                 currentUser={currentUser}
+              />
+            )}
+
+            {currentScreen === 'gestao-8d' && (
+              <Gestao8DView 
+                onNavigate={handleNavigate}
+                currentUser={currentUser}
+                initialId8d={screenParams?.id8d}
+                rncId={screenParams?.rncId}
+              />
+            )}
+
+            {currentScreen === 'plano-acao' && (
+              <PlanoAcaoView 
+                onNavigate={handleNavigate}
+                currentUser={currentUser}
+                idprograma={screenParams?.idprograma}
               />
             )}
           </div>

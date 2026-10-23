@@ -318,6 +318,362 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
             return;
           }
 
+          // 10. 8D - GET RNCs marcadas para 8D
+          if (req.method === 'GET' && (req.url === '/api/sp/8d/rncs' || req.url.startsWith('/api/sp/8d/rncs?'))) {
+            const forceRefresh = req.url.includes('refresh=true');
+            const listName = env.SP_LIST_RNCS || "Resumo dos Incidentes de qualidade";
+            const graphUrl = `https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${encodeURIComponent(listName)}/items?$expand=fields&$orderby=fields/Modified%20desc&$top=999`;
+            const allItems = await fetchAllGraphPages(graphUrl, token, 'rncs', forceRefresh);
+            
+            // Filtro por abrir_8d = 'Sim' ou local_8d = 'APP'
+            const filtered = allItems.filter(it => {
+              const f = it.fields || {};
+              const abrir8d = String(f.Abrir_x0020_8D_x003f_ || f.abrir_8d || f.abrir8d || f.Abrir8D || '').trim().toLowerCase();
+              const local8d = String(f.local_8d || f.local8d || '').trim().toUpperCase();
+              return abrir8d === 'sim' || local8d === 'APP';
+            });
+
+            res.end(JSON.stringify({ value: filtered, total: filtered.length }));
+            return;
+          }
+
+          // 11. 8D - GET Detalhes Agregados por ID do 8D (:id8d)
+          if (req.method === 'GET' && req.url.startsWith('/api/sp/8d/') && req.url.includes('/detalhes')) {
+            const rawId = req.url.replace('/api/sp/8d/', '').replace('/detalhes', '').split('?')[0];
+            const id8d = decodeURIComponent(rawId).trim();
+            const forceRefresh = req.url.includes('refresh=true');
+
+            // Carrega em paralelo todas as coleções relacionadas
+            const [partAll, ishiAll, henkAll, entrAll, planosAll, acoesAll] = await Promise.all([
+              fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/d42434ab-576a-4e6b-b50b-333c63b3b070/items?expand=fields&$top=999`, token, 'sp_participantes', forceRefresh),
+              fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/ad128c05-7222-4bf1-ac63-47c6716fdd59/items?expand=fields&$top=999`, token, 'sp_ishikawa', forceRefresh),
+              fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/04327a3f-f030-4111-a26e-7d6454997c8c/items?expand=fields&$top=999`, token, 'sp_henkaten', forceRefresh),
+              fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/7298b358-1dae-426b-97da-798054647bdc/items?expand=fields&$top=999`, token, 'sp_entrevista', forceRefresh),
+              fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/87789d0a-3594-40e0-9109-33e8836884f4/items?expand=fields&$top=999`, token, 'sp_planos', forceRefresh),
+              fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/649afa01-cda6-4eb8-a89d-e9ffe9af7d41/items?expand=fields&$top=999`, token, 'sp_acoes', forceRefresh)
+            ]);
+
+            // Normaliza matching por id8d (ex: "I - 4520" ou "Q - 1014" ou número)
+            const matchId = (val?: string) => {
+              if (!val) return false;
+              const cleanVal = String(val).trim().toUpperCase();
+              const target = id8d.toUpperCase();
+              return cleanVal === target || cleanVal.endsWith(`- ${target}`) || cleanVal.includes(target);
+            };
+
+            const participantesItem = partAll.find(it => matchId(it.fields?.id8d || it.fields?.id_8d));
+            const ishikawaItems = ishiAll.filter(it => matchId(it.fields?.id8d || it.fields?.id_8d));
+            const henkatenItem = henkAll.find(it => matchId(it.fields?.id8d || it.fields?.id_8d));
+            const entrevistaItem = entrAll.find(it => matchId(it.fields?.id8d || it.fields?.id_8d));
+            const planoItem = planosAll.find(it => matchId(it.fields?.idprograma || it.fields?.id_programa));
+            const acoesItems = acoesAll.filter(it => {
+              const f = it.fields || {};
+              if (matchId(f.id_programa_acoes)) return true;
+              if (planoItem && String(f.id_rel2) === String(planoItem.fields?.id || planoItem.id)) return true;
+              return false;
+            });
+
+            res.end(JSON.stringify({
+              id8d,
+              participantes: participantesItem ? { id: participantesItem.id, ...participantesItem.fields } : null,
+              ishikawa: ishikawaItems.map(it => ({ id: it.id, ...it.fields })),
+              henkaten: henkatenItem ? { id: henkatenItem.id, ...henkatenItem.fields } : null,
+              entrevista: entrevistaItem ? { id: entrevistaItem.id, ...entrevistaItem.fields } : null,
+              plano: planoItem ? { id: planoItem.id, ...planoItem.fields } : null,
+              acoes: acoesItems.map(it => ({ id: it.id, ...it.fields }))
+            }));
+            return;
+          }
+
+          // 12. 8D - POST/PATCH Participantes e Revisões de Etapas
+          if (req.method === 'POST' && req.url.startsWith('/api/sp/8d/') && req.url.endsWith('/participantes')) {
+            const rawId = req.url.replace('/api/sp/8d/', '').replace('/participantes', '').split('?')[0];
+            const id8d = decodeURIComponent(rawId).trim();
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "d42434ab-576a-4e6b-b50b-333c63b3b070";
+              const partAll = await fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${listId}/items?expand=fields&$top=999`, token, 'sp_participantes', false);
+              const existing = partAll.find(it => String(it.fields?.id8d || '').trim().toUpperCase() === id8d.toUpperCase());
+
+              let result;
+              if (existing) {
+                const patchUrl = `https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${listId}/items/${existing.id}/fields`;
+                const gRes = await fetch(patchUrl, {
+                  method: 'PATCH',
+                  headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify(payload)
+                });
+                result = await gRes.json();
+              } else {
+                const postUrl = `https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${listId}/items`;
+                const gRes = await fetch(postUrl, {
+                  method: 'POST',
+                  headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                  body: JSON.stringify({ fields: { id8d, ...payload } })
+                });
+                result = await gRes.json();
+              }
+              delete dataCache['sp_participantes'];
+              res.end(JSON.stringify(result));
+            });
+            return;
+          }
+
+          // 13. 8D - POST Causa Ishikawa
+          if (req.method === 'POST' && req.url.startsWith('/api/sp/8d/') && req.url.endsWith('/ishikawa')) {
+            const rawId = req.url.replace('/api/sp/8d/', '').replace('/ishikawa', '').split('?')[0];
+            const id8d = decodeURIComponent(rawId).trim();
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "ad128c05-7222-4bf1-ac63-47c6716fdd59";
+              const postUrl = `https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${listId}/items`;
+              const gRes = await fetch(postUrl, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: { id8d, ...payload } })
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_ishikawa'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 14. 8D - PATCH Causa Ishikawa (Atualizar 5PQ ou Hipótese)
+          if (req.method === 'PATCH' && req.url.startsWith('/api/sp/8d/ishikawa/')) {
+            const itemId = req.url.replace('/api/sp/8d/ishikawa/', '').split('?')[0];
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "ad128c05-7222-4bf1-ac63-47c6716fdd59";
+              const patchUrl = `https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${listId}/items/${itemId}/fields`;
+              const gRes = await fetch(patchUrl, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_ishikawa'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 15. 8D - DELETE Causa Ishikawa
+          if (req.method === 'DELETE' && req.url.startsWith('/api/sp/8d/ishikawa/')) {
+            const itemId = req.url.replace('/api/sp/8d/ishikawa/', '').split('?')[0];
+            const listId = "ad128c05-7222-4bf1-ac63-47c6716fdd59";
+            const delUrl = `https://graph.microsoft.com/v1.0/sites/${siteQualidade}/lists/${listId}/items/${itemId}`;
+            const gRes = await fetch(delUrl, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            delete dataCache['sp_ishikawa'];
+            res.statusCode = gRes.status;
+            res.end(JSON.stringify({ success: gRes.ok }));
+            return;
+          }
+
+          // 16. PLANO DE AÇÃO - GET Planos Mestres ('Action plan')
+          if (req.method === 'GET' && (req.url === '/api/sp/planos' || req.url.startsWith('/api/sp/planos?'))) {
+            const forceRefresh = req.url.includes('refresh=true');
+            const listId = "87789d0a-3594-40e0-9109-33e8836884f4";
+            const allItems = await fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items?expand=fields&$top=999`, token, 'sp_planos', forceRefresh);
+            
+            const urlObj = new URL(`http://localhost${req.url}`);
+            const idprograma = urlObj.searchParams.get('idprograma');
+            let filtered = allItems;
+            if (idprograma) {
+              filtered = allItems.filter(it => String(it.fields?.idprograma || '').trim().toUpperCase() === idprograma.trim().toUpperCase());
+            }
+
+            res.end(JSON.stringify({ value: filtered.map(it => ({ id: it.id, ...it.fields })), total: filtered.length }));
+            return;
+          }
+
+          // 17. PLANO DE AÇÃO - POST Criar Plano Mestre ('Action plan')
+          if (req.method === 'POST' && req.url === '/api/sp/planos') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "87789d0a-3594-40e0-9109-33e8836884f4";
+              const postUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items`;
+              const gRes = await fetch(postUrl, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: payload })
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_planos'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 18. PLANO DE AÇÃO - PATCH Atualizar Plano Mestre
+          if (req.method === 'PATCH' && req.url.startsWith('/api/sp/planos/')) {
+            const itemId = req.url.replace('/api/sp/planos/', '').split('?')[0];
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "87789d0a-3594-40e0-9109-33e8836884f4";
+              const patchUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items/${itemId}/fields`;
+              const gRes = await fetch(patchUrl, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_planos'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 19. AÇÕES DETALHADAS - GET ('Action plan_acoes')
+          if (req.method === 'GET' && (req.url === '/api/sp/acoes' || req.url.startsWith('/api/sp/acoes?'))) {
+            const forceRefresh = req.url.includes('refresh=true');
+            const listId = "649afa01-cda6-4eb8-a89d-e9ffe9af7d41";
+            const allItems = await fetchAllGraphPages(`https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items?expand=fields&$top=999`, token, 'sp_acoes', forceRefresh);
+            
+            const urlObj = new URL(`http://localhost${req.url}`);
+            const idprograma = urlObj.searchParams.get('idprograma');
+            const idplano = urlObj.searchParams.get('idplano');
+
+            let filtered = allItems;
+            if (idprograma) {
+              filtered = filtered.filter(it => String(it.fields?.id_programa_acoes || '').trim().toUpperCase() === idprograma.trim().toUpperCase());
+            }
+            if (idplano) {
+              filtered = filtered.filter(it => String(it.fields?.id_rel2 || '') === String(idplano));
+            }
+
+            res.end(JSON.stringify({ value: filtered.map(it => ({ id: it.id, ...it.fields })), total: filtered.length }));
+            return;
+          }
+
+          // 20. AÇÕES DETALHADAS - POST Criar Nova Ação
+          if (req.method === 'POST' && req.url === '/api/sp/acoes') {
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "649afa01-cda6-4eb8-a89d-e9ffe9af7d41";
+              const postUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items`;
+              const gRes = await fetch(postUrl, {
+                method: 'POST',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify({ fields: payload })
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_acoes'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 21. AÇÕES DETALHADAS - PATCH Editar Ação
+          if (req.method === 'PATCH' && req.url.startsWith('/api/sp/acoes/')) {
+            const itemId = req.url.replace('/api/sp/acoes/', '').split('?')[0];
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "649afa01-cda6-4eb8-a89d-e9ffe9af7d41";
+              const patchUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items/${itemId}/fields`;
+              const gRes = await fetch(patchUrl, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_acoes'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 22. AÇÕES DETALHADAS - POST Concluir Ação pelo Responsável
+          if (req.method === 'POST' && req.url.startsWith('/api/sp/acoes/') && req.url.endsWith('/concluir')) {
+            const itemId = req.url.replace('/api/sp/acoes/', '').replace('/concluir', '').split('?')[0];
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "649afa01-cda6-4eb8-a89d-e9ffe9af7d41";
+              const patchUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items/${itemId}/fields`;
+              
+              const fieldsToUpdate = {
+                status: payload.validacao_acao === 'NÃO' ? 'Validado' : 'Concluído',
+                data_conclusao: payload.data_conclusao || new Date().toISOString(),
+                comentarios_evidencia: payload.comentarios_evidencia || '',
+                finalizacao: payload.validacao_acao === 'NÃO' ? 'Sim' : 'Não'
+              };
+
+              const gRes = await fetch(patchUrl, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(fieldsToUpdate)
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_acoes'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 23. AÇÕES DETALHADAS - POST Validar Ação pela Qualidade
+          if (req.method === 'POST' && req.url.startsWith('/api/sp/acoes/') && req.url.endsWith('/validar')) {
+            const itemId = req.url.replace('/api/sp/acoes/', '').replace('/validar', '').split('?')[0];
+            let body = '';
+            req.on('data', chunk => body += chunk);
+            req.on('end', async () => {
+              const payload = JSON.parse(body);
+              const listId = "649afa01-cda6-4eb8-a89d-e9ffe9af7d41";
+              const patchUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items/${itemId}/fields`;
+              
+              const isApproved = payload.aprovado === true || payload.status === 'Validado';
+              const fieldsToUpdate = {
+                status: isApproved ? 'Validado' : 'Aberto',
+                finalizacao: isApproved ? 'Sim' : 'Não',
+                status_revisar2: isApproved ? '' : 'Revisar',
+                comentarios_validacao: payload.comentarios_validacao || (isApproved ? 'Ação validada com sucesso.' : 'Ação requer revisão técnica.')
+              };
+
+              const gRes = await fetch(patchUrl, {
+                method: 'PATCH',
+                headers: { 'Authorization': `Bearer ${token}`, 'Content-Type': 'application/json' },
+                body: JSON.stringify(fieldsToUpdate)
+              });
+              const data = await gRes.json();
+              delete dataCache['sp_acoes'];
+              res.end(JSON.stringify(data));
+            });
+            return;
+          }
+
+          // 24. AÇÕES DETALHADAS - DELETE
+          if (req.method === 'DELETE' && req.url.startsWith('/api/sp/acoes/')) {
+            const itemId = req.url.replace('/api/sp/acoes/', '').split('?')[0];
+            const listId = "649afa01-cda6-4eb8-a89d-e9ffe9af7d41";
+            const delUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items/${itemId}`;
+            const gRes = await fetch(delUrl, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            delete dataCache['sp_acoes'];
+            res.statusCode = gRes.status;
+            res.end(JSON.stringify({ success: gRes.ok }));
+            return;
+          }
+
           // Fallback para rota desconhecida
           res.statusCode = 404;
           res.end(JSON.stringify({ error: `Rota API não suportada: ${req.url}` }));

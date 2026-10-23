@@ -11,7 +11,9 @@ import {
   Factory,
   ShieldPlus,
   List,
-  X
+  X,
+  ShieldCheck,
+  CheckSquare
 } from 'lucide-react';
 import { ActiveScreen, UsuarioQualidade } from '../types';
 
@@ -124,6 +126,32 @@ export const AppSidebar: React.FC<AppSidebarProps> = ({
               )}
               <LayoutGrid className={getIconClasses(currentScreen === 'menu-2')} />
               <span className="truncate">Menu principal</span>
+            </button>
+
+            {/* Gestão de 8D */}
+            <button
+              type="button"
+              onClick={() => handleItemClick('gestao-8d')}
+              className={getLinkClasses(currentScreen === 'gestao-8d')}
+            >
+              {currentScreen === 'gestao-8d' && (
+                <span className="absolute left-0 top-2 bottom-2 w-1.25 bg-[#0f6cbd] rounded-r-full shadow-[0_0_8px_rgba(15,108,189,0.5)]" />
+              )}
+              <ShieldCheck className={getIconClasses(currentScreen === 'gestao-8d')} />
+              <span className="truncate">Gestão de 8D</span>
+            </button>
+
+            {/* Plano de Ação */}
+            <button
+              type="button"
+              onClick={() => handleItemClick('plano-acao')}
+              className={getLinkClasses(currentScreen === 'plano-acao')}
+            >
+              {currentScreen === 'plano-acao' && (
+                <span className="absolute left-0 top-2 bottom-2 w-1.25 bg-[#0f6cbd] rounded-r-full shadow-[0_0_8px_rgba(15,108,189,0.5)]" />
+              )}
+              <CheckSquare className={getIconClasses(currentScreen === 'plano-acao')} />
+              <span className="truncate">Plano de Ação (Kanban)</span>
             </button>
           </div>
         </div>

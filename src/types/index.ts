@@ -29,7 +29,9 @@ export type ActiveScreen =
   | 'rastreabilidade'
   | 'falha-entrega'
   | 'pagamento-protcli'
-  | 'cadastro-usuarios';
+  | 'cadastro-usuarios'
+  | 'gestao-8d'
+  | 'plano-acao';
 
 export interface UsuarioQualidade {
   id: number;
@@ -266,4 +268,130 @@ export interface ListFiltersState {
   searchInput: string;
   viewMode: 'grid' | 'list';
   currentPage: number;
+}
+
+// ============================================================================
+// ESTRUTURAS DO 8D (GESTAO DE 8D GESTAMP)
+// ============================================================================
+
+export interface Participantes8DRecord {
+  id?: string;
+  id8d: string;
+  participantes_8d: string;
+  lider_8d?: string;
+  champion_8d?: string;
+  yokoten?: string;
+  fmea_revisar?: string;
+  status_revisao_4d?: string;
+  comentarios_revisao_4d?: string;
+  status_revisao_5d?: string;
+  comentarios_revisao_5d?: string;
+  status_revisao_6d?: string;
+  comentarios_revisao_6d?: string;
+  status_revisao_7d?: string;
+  comentarios_revisao_7d?: string;
+  validar_8d?: string;
+  comentarios_validacao?: string;
+}
+
+export interface IshikawaItem {
+  id: string;
+  id8d: string;
+  seisms: 'Método' | 'Máquina' | 'Mão de obra' | 'Material' | 'Medição' | 'Meio ambiente' | string;
+  descricao_causa: string;
+  ocnd: 'Ocorrência' | 'Não Detecção';
+  okng: 'OK' | 'NG';
+  seq?: number;
+  umpq?: string;
+  doispq?: string;
+  trespq?: string;
+  quatropq?: string;
+  cincopq?: string; // 5º Porquê - Causa Raiz
+  anexos?: string[];
+}
+
+export interface HenkatenItem {
+  id?: string;
+  id8d: string;
+  maqhkt?: string;
+  mohkt?: string;
+  methkt?: string;
+  mathkt?: string;
+  medhkt?: string;
+  mambhkt?: string;
+  comentarios?: string;
+}
+
+export interface Entrevista8DItem {
+  id?: string;
+  id8d: string;
+  observacoes_gemba?: string;
+  depoimentos?: string;
+  simulacao?: string;
+}
+
+export interface EightDDetails {
+  id8d: string;
+  rnc?: RNCRecord;
+  participantes: Participantes8DRecord | null;
+  ishikawa: IshikawaItem[];
+  henkaten: HenkatenItem | null;
+  entrevista: Entrevista8DItem | null;
+  plano: PlanoAcaoMestre | null;
+  acoes: PlanoAcaoItem[];
+}
+
+// ============================================================================
+// ESTRUTURAS DO PLANO DE AÇÃO ('Action plan' e 'Action plan_acoes')
+// ============================================================================
+
+export type StatusAcao = 'Aberto' | 'Atrasado' | 'Concluído' | 'Validado' | 'Revisar';
+export type PrioridadeAcao = 'Alta' | 'Média' | 'Baixa';
+export type TipoAcao = 'CONTENÇÃO' | 'CORRETIVA' | 'PREVENTIVA' | 'MELHORIA';
+
+export interface PlanoAcaoMestre {
+  id: string | number;
+  id_rel1?: string;
+  idprograma?: string; // Chave externa (ex: varid8d -> "I - 4520")
+  indicador_programa_estrategico: string;
+  sub1?: string;
+  sub2?: string;
+  posto_?: string;
+  produto_?: string;
+  setor_?: string;
+  prioridade: PrioridadeAcao;
+  descricao_problema_oportunidade: string;
+  foto_acao?: string;
+  status: string;
+  data_abertura?: string;
+  responsavel_abertura?: string;
+}
+
+export interface PlanoAcaoItem {
+  id: string | number;
+  id_rel2?: string; // FK Cabeçalho ('Action plan'.id)
+  id_programa_acoes?: string; // FK Externa (ex: varid8d -> "I - 4520")
+  causa?: string; // Causa raiz dos 5 Porquês
+  contra_medida: string;
+  comentarios_observacoes?: string;
+  data_planejada: string;
+  data_acompanhamento: string;
+  data_conclusao?: string;
+  responsavel_acao: string;
+  email?: string;
+  email_super?: string;
+  tipo_acao: TipoAcao;
+  yokoten?: 'SIM' | 'NÃO' | string;
+  poka_yoke?: 'SIM' | 'NÃO' | string;
+  eight_d_seven_d?: 'FMEA' | 'Trabalho Padronizado' | 'Auditoria Escalonada' | string;
+  oc_nd?: 'Ocorrência' | 'Não Detecção' | string;
+  evidencia_obrigatoria?: 'SIM' | 'NÃO' | 'Sim' | 'Não';
+  validacao_acao?: 'SIM' | 'NÃO' | 'Sim' | 'Não';
+  status: StatusAcao;
+  comentarios_evidencia?: string;
+  comentarios_validacao?: string;
+  finalizacao?: 'Sim' | 'Não';
+  status_revisar2?: string;
+  revisao_data?: string;
+  data_plan_anterior?: string;
 }
