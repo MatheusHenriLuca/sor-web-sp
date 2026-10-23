@@ -1,0 +1,1556 @@
+[
+  {
+    "file": "App.pa.yaml",
+    "line": 4,
+    "control": "App",
+    "event": "OnStart",
+    "code": "Set(varRE,LookUp('Usuários ocorrências qualidade',nome = User().FullName,RE_Acesso));\nSet(varNome,User().FullName);\nSet(Varperfil,LookUp('Usuários ocorrências qualidade',nome = User().FullName,Título));\n\nClearCollect(varPessoas,ShowColumns(BASE_ATIVOS,'Nº pess.','Nº pessoal',UnidadeOrg,posicao));\nClearCollect(Col_Treinamentos,Distinct(Filter('Registros de treinamentos','RE:' = varRE),'ID-RNC'));\n\nConcurrent(\nClearCollect(colpecasgerais,\nSort(lista_geral_peças_aa3, Identificação, SortOrder.Ascending)),\nClearCollect(colpecasgerais2,\nSort(lista_geral_peças_aa3, Identificação, SortOrder.Descending)));\n\nClearCollect(colpecasgerais_AA3,\ncolpecasgerais,Filter(colpecasgerais2, Not(Identificação in colpecasgerais.Identificação)));\n\nClear(colpecasgerais);\nClear(colpecasgerais2);"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 154,
+    "control": "Subtitle3_2",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 179,
+    "control": "Subtitle3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 204,
+    "control": "Title5",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 230,
+    "control": "NextArrow2",
+    "event": "OnSelect",
+    "code": "UpdateContext({ itemSelected: true, CurrentItem: ThisItem });"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 288,
+    "control": "Icon5",
+    "event": "OnSelect",
+    "code": "NewForm(Formusers); UpdateContext({ newMode: true });"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 307,
+    "control": "Icon5_1",
+    "event": "OnSelect",
+    "code": "SubmitForm(Formusers);"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 342,
+    "control": "Icon3",
+    "event": "OnSelect",
+    "code": "UpdateContext({ editMode: true, selectedRecord: Galleryusers.Selected })"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 360,
+    "control": "Icon9",
+    "event": "OnSelect",
+    "code": "ResetForm(Formusers); UpdateContext({ editMode: false, newMode: false });"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 378,
+    "control": "Icon9_1",
+    "event": "OnSelect",
+    "code": "UpdateContext({ varexcluir:true });"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 396,
+    "control": "Icon9_2",
+    "event": "OnSelect",
+    "code": "Remove('Usuários ocorrências qualidade',Galleryusers.Selected);\nUpdateContext({ varexcluir:false});"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 419,
+    "control": "Formusers",
+    "event": "OnSuccess",
+    "code": "UpdateContext({ CurrentItem: Self.LastSubmit, editMode: false, newMode: false });\nNotify(\"Usuário alterado / cadastrado com sucesso!\",NotificationType.Success,5000);\nRefresh('Usuários ocorrências qualidade')"
+  },
+  {
+    "file": "Cadastro_usuarios.pa.yaml",
+    "line": 623,
+    "control": "Icon3_1",
+    "event": "OnSelect",
+    "code": "Back()"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 7,
+    "control": "Detalhes de 8D'S.pa.yaml",
+    "event": "OnVisible",
+    "code": "Set(confirmexclud,false);\nIf(varitemselec.protcliente = \"Sim\",\nSet(varDetalhes,true),\nSet(varDetalhes,false));\n\nIf(varitemselec.protcliente = \"Sim\",\nSet(varRetSel,false),\nSet(varRetSel,true));\n\nSet(VarcorbtnRetSel,RGBA(13, 50, 61, 0.8));\nSet(VarcorbtnDetalhes,RGBA(40, 112, 134, 0.8));\n\nUpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nUpdateContext({varformprotcli:false});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 78,
+    "control": "IconBackarrow1_2",
+    "event": "OnSelect",
+    "code": "Navigate('Lista de 8D''S', ScreenTransition.None)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 122,
+    "control": "IconEdit1_2",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:true});\nUpdateContext({Vartelapopup:true});\n\nUpdateContext({vartitulopopup:\"Divulgação alerta da qualidade\"});\nUpdateContext({Varregalerta:true});\nUpdateContext({varabrir8d:false});\nUpdateContext({varconcluirrnc:false});\nUpdateContext({vartreinamento:false});\nUpdateContext({varacoes:false});\n\nResetForm(Formregalerta);\nNewForm(Formregalerta);\nSet(Varhoraalertquali,Now())"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 170,
+    "control": "IconDelete1_2",
+    "event": "OnSelect",
+    "code": "Set(confirmexclud,true);\nUpdateContext({Vartelafundo:true});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 208,
+    "control": "IconEdit1_3",
+    "event": "OnSelect",
+    "code": "Switch(Varperfil,\n\"Admin\",EditForm(EditFormNovoReg);Navigate('Registro de 8D', ScreenTransition.None, {edicao: true}),\n\"Adminqual\",EditForm(EditFormNovoReg);Navigate('Registro de 8D', ScreenTransition.None, {edicao: true}),\n\"Processos\",EditForm(EditFormNovoReg);Navigate('Registro de 8D', ScreenTransition.None, {edicao: true}),\n\"Inspqual\",EditForm(EditFormNovoReg);Navigate('Registro de 8D', ScreenTransition.None, {edicao: false}),\n\"Liderqual\",EditForm(EditFormNovoReg);Navigate('Registro de 8D', ScreenTransition.None, {edicao: true})\n)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 249,
+    "control": "Image3_2",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:true});\nUpdateContext({varformprotcli:true});\nEditForm(EditFormprotcli)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 283,
+    "control": "IconBackarrow1_3",
+    "event": "OnSelect",
+    "code": "Navigate('Detalhes impressao', ScreenTransition.None)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 359,
+    "control": "Btn_Detalhes",
+    "event": "OnSelect",
+    "code": "Set(varDetalhes,true);\nSet(varRetSel,false);\nSet(vardivulalerta,false);\nSet(VarcorbtnDetalhes,RGBA(13, 50, 61, 0.8));\nSet(VarcorbtnRetSel,RGBA(40, 112, 134, 0.8))"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 401,
+    "control": "Btn_RetSel",
+    "event": "OnSelect",
+    "code": "Set(varDetalhes,false);\nSet(varRetSel,true);\nSet(vardivulalerta,true);\nSet(VarcorbtnRetSel,RGBA(13, 50, 61, 0.8));\nSet(VarcorbtnDetalhes,RGBA(40, 112, 134, 0.8))"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 443,
+    "control": "Btn_Rastrear",
+    "event": "OnSelect",
+    "code": "Navigate(Rastreabilidade_Controle_Prod_1);\nSet(vardivulalerta,false);"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 1719,
+    "control": "Image3_3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3480,
+    "control": "Button2_2",
+    "event": "OnSelect",
+    "code": "Set(confirmexclud,false);\nUpdateContext({Vartelafundo:false});\n\nClearCollect(col_listarastreabdelete,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\nForAll(col_listarastreabdelete,Remove('Lista de Rastreabilidade',ThisRecord));\n\nRemove([@'Resumo dos Incidentes de qualidade'], varitemselec);\nIf (IsEmpty(Errors([@'Resumo dos Incidentes de qualidade'], varitemselec)), Back());\n\nClearCollect(col_lotes_sap_reg,Filter(lotes_sap_reg,idrnc = varitemselec.ID));\nForAll(col_lotes_sap_reg,Remove(lotes_sap_reg,ThisRecord));\n\nClearCollect(col_etiquetas_vivas,Filter(etiquetas_vivas,idrnc = varitemselec.ID));\nForAll(col_etiquetas_vivas,Remove(etiquetas_vivas,ThisRecord));\n\nClearCollect(col_rast_cabeceiras,Filter(rast_cabeceiras,idrnc = varitemselec.ID));\nForAll(col_rast_cabeceiras,Remove(rast_cabeceiras,ThisRecord));"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3525,
+    "control": "Button3_2",
+    "event": "OnSelect",
+    "code": "Set(confirmexclud,false);\nUpdateContext({Vartelafundo:false});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3598,
+    "control": "Icon4_2",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelapopup1:true});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3635,
+    "control": "Icon4_1",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nResetForm(Formregalerta)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3728,
+    "control": "Icon4_6",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Varregalerta:false});\nResetForm(Formregalerta)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3788,
+    "control": "Icon4_7",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Varregalerta:false});\nResetForm(Formregalerta)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3848,
+    "control": "Icon4_8",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Varregalerta:false});\nResetForm(Formregalerta)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3908,
+    "control": "Icon4_9",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Varregalerta:false});\nResetForm(Formregalerta)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3973,
+    "control": "ButtonCanvas2",
+    "event": "OnSelect",
+    "code": "Launch(\"https://apps.powerapps.com/play/e/default-79998224-6a43-4048-97e9-4cc9f028deb7/a/bb7b1186-e490-40e2-980e-ba5defd05877?tenantId=79998224-6a43-4048-97e9-4cc9f028deb7&sourcetime=1718823532997\",\n{idprograma:Left(varitemselec.Classificação.Value,1) &\" - \"&varitemselec.ID,\napporigem:\"2\",\nappterc:\"Sim\",\nindicador:\"ATENDIMENTO AO CLIENTE\",\nareafmds:varitemselec.fmds,\nprioridade: \"Média\",\nproduto:Left(If(IsBlank(varitemselec.componente),varitemselec.produto,varitemselec.componente),9),\nfiltroplanoacao:\"Não\"},LaunchTarget.New);"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 3997,
+    "control": "ButtonCanvas2_1",
+    "event": "OnSelect",
+    "code": "Launch(\"https://apps.powerapps.com/play/e/default-79998224-6a43-4048-97e9-4cc9f028deb7/a/bb7b1186-e490-40e2-980e-ba5defd05877?tenantId=79998224-6a43-4048-97e9-4cc9f028deb7&sourcetime=1718823532997\",\n{idprograma:Left(varitemselec.Classificação.Value,1) &\" - \"&varitemselec.ID,\napporigem:\"2\",\nappterc:\"Sim\",\nfiltroplanoacao:\"Sim\"},LaunchTarget.New);"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 4018,
+    "control": "Formregalerta",
+    "event": "OnSuccess",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nNotify(\"Divulgação do alerta da qualidade registrado com sucesso!\",NotificationType.Success,5000)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 4359,
+    "control": "Formabrir8D",
+    "event": "OnSuccess",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nNotify(\"8D criado com sucesso!\",NotificationType.Success,5000);"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 4892,
+    "control": "Formconcluirrnc",
+    "event": "OnSuccess",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nNotify(\"RNC Finalizada com Sucesso!\",NotificationType.Success,5000)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5096,
+    "control": "Formtrein",
+    "event": "OnSuccess",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nNotify(\"Treinamento cadastrado com sucesso!\",NotificationType.Success,5000)"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5445,
+    "control": "Btnregalerta",
+    "event": "OnSelect",
+    "code": "SubmitForm(Formregalerta);"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5476,
+    "control": "BtnAbrir8D",
+    "event": "OnSelect",
+    "code": "If(LookUp(lista_abrir8d,id_rnc=varitemselec.ID,abrir_8d)=\"Sim\",\nNotify(\"8D já foi Aberto, favor verificar!\",NotificationType.Error,5000)\n,\n\nPatch('Resumo dos Incidentes de qualidade',\n\n{\nID:varitemselec.ID,\nabrir_8d: \"Sim\"\n});\n\nSubmitForm(Formabrir8D))"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5519,
+    "control": "BtnCocluirrnc",
+    "event": "OnSelect",
+    "code": "Set(var_listarastreab,\nText(\nConcat(\nFilter('Lista de Rastreabilidade',\nvaritemselec.ID=id_rnc),\n\" - \" & If(IsBlank(status_verif),\"NR\",status_verif))));\n\nClearCollect(col_etiquetas_vivas,\nFilter(etiquetas_vivas,\nidrnc=varitemselec.ID));\n\nClearCollect(col_etiquetas_vivas_split1,\nUngroup(\nForAll(col_etiquetas_vivas,\n{IDRNC:idrnc,\nSeqrel:titulo,\netiquetasap:Split(etiquetasap,\",\")}),\netiquetasap));\n\nSet(var_etiquetas_vivas,\nText(\nConcat(\nFilter(\nDropColumns(\nAddColumns(col_etiquetas_vivas_split1,\netiquetasap,Last(FirstN(Split(Value,\":\"),2)).Value,\nStatusBloqueio,Last(Split(Value,\":\")).Value),Value),\nStatusBloqueio=\"bloq\"),\n\" - \" & etiquetasap)));\n\nIf(\"NR\" in var_listarastreab Or \"E\" in var_listarastreab Or var_listarastreab = \"\",\nNotify(\"Existe uma solicitação sem verificar as etiquetas SAP\",NotificationType.Error,5000),\nIf(var_etiquetas_vivas <> \"\",\nNotify(\"As seguintes etiquetas ainda estão bloqueadas\" & var_etiquetas_vivas & \" Favor verificar!\",NotificationType.Error,5000),\nSubmitForm(Formconcluirrnc);\nNotify(\"Ocorrência finalizada com sucesso!\",NotificationType.Success,5000));\n);"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5587,
+    "control": "Btnregtrein",
+    "event": "OnSelect",
+    "code": "ClearCollect(colpessoastreinadas,Filter('Registros de treinamentos','ID-RNC' = varitemselec.ID,'RE:' = Value(DataCardValue65.Text)));\n\nIf(CountRows(colpessoastreinadas)=0,\n\nIf(IsBlank(Label6.Text),\nNotify(\"RE Não Encontrado!\",NotificationType.Error,5000) And Set(varerror,true),\nSubmitForm(Formtrein);\nSubmitForm(Formtrein1));,\nNotify(\"Funcionário já treinado no produto!\",NotificationType.Error,5000))"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5672,
+    "control": "Iconfinalizarrnc",
+    "event": "OnSelect",
+    "code": "ResetForm(Formconcluirrnc);\nEditForm(Formconcluirrnc);\n\nUpdateContext({Varregalerta:false});\nUpdateContext({varabrir8d:false});\nUpdateContext({varconcluirrnc:true});\nUpdateContext({vartreinamento:false});\nUpdateContext({varacoes:false});\n\nUpdateContext({vartitulopopup:\"Finalizar RNC\"});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5754,
+    "control": "IconAbrir8d",
+    "event": "OnSelect",
+    "code": "ResetForm(Formabrir8D);\nNewForm(Formabrir8D);\n\nUpdateContext({Varregalerta:false});\nUpdateContext({varabrir8d:true});\nUpdateContext({varconcluirrnc:false});\nUpdateContext({vartreinamento:false});\nUpdateContext({varacoes:false});\n\nUpdateContext({vartitulopopup:\"Abrir Formulário de 8D\"});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5827,
+    "control": "IconDivulalerta",
+    "event": "OnSelect",
+    "code": "ResetForm(Formregalerta);\nNewForm(Formregalerta);\n\nUpdateContext({Varregalerta:true});\nUpdateContext({varabrir8d:false});\nUpdateContext({varconcluirrnc:false});\nUpdateContext({vartreinamento:false});\nUpdateContext({varacoes:false});\n\nSet(Varhoraalertquali,Now());\n\nUpdateContext({vartitulopopup:\"Divulgação alerta da qualidade\"});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5904,
+    "control": "Icontreinamento",
+    "event": "OnSelect",
+    "code": "ResetForm(Formtrein);\nNewForm(Formtrein);\nEditForm(Formtrein1);\nSet(varerror,false);\n\nUpdateContext({Varregalerta:false});\nUpdateContext({varabrir8d:false});\nUpdateContext({varconcluirrnc:false});\nUpdateContext({vartreinamento:true});\nUpdateContext({varacoes:false});\n\nUpdateContext({vartitulopopup:\"Registro de Treinamento\"});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 5982,
+    "control": "Icontreinamento_1",
+    "event": "OnSelect",
+    "code": "Set(varerror,false);\n\nUpdateContext({Varregalerta:false});\nUpdateContext({varabrir8d:false});\nUpdateContext({varconcluirrnc:false});\nUpdateContext({vartreinamento:false});\nUpdateContext({varacoes:true});\n\nUpdateContext({vartitulopopup:\"Apontamento de ações 8D\"});\n\nRefresh('Action plan')"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6080,
+    "control": "Icon4_3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6117,
+    "control": "Icon4",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelapopup1:false});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6164,
+    "control": "Title3_2",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6189,
+    "control": "Title3_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6214,
+    "control": "Subtitle1_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6239,
+    "control": "Title3_3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6261,
+    "control": "Icon7_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6306,
+    "control": "Title3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6328,
+    "control": "Subtitle1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6350,
+    "control": "Icon7",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6405,
+    "control": "Iconocorr_4",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6439,
+    "control": "Icon5_11",
+    "event": "OnSelect",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nUpdateContext({varformprotcli:false});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6461,
+    "control": "EditFormprotcli",
+    "event": "OnSuccess",
+    "code": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nUpdateContext({varformprotcli:false});"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6725,
+    "control": "ButtonCanvas1",
+    "event": "OnSelect",
+    "code": "Switch(RadioGroupCanvas2_1.Selected.Value,\n\"Sim - Realizar Análise / Contenção / Rastreabilidade\",\nSet(varaprovacaoprotcli,\"Relatório Inicial\");\nSet(varstatusprotcli,\"Aprovado\");\n,\n\"Não - Não realizar Análise / Contenção / Rastreabilidade\",\nSet(varaprovacaoprotcli,\"Concluído\");\nSet(varstatusprotcli,\"Aprovado\"););\n\nIf(EditFormprotcli.Valid,\nNotify(\"Avaliação realizada com sucesso!\",NotificationType.Success,5000);\nSubmitForm(EditFormprotcli);\n,\nNotify(\"Favor preencher todos os campos\",NotificationType.Error,5000))"
+  },
+  {
+    "file": "Detalhes de 8D'S.pa.yaml",
+    "line": 6756,
+    "control": "ButtonCanvas1_1",
+    "event": "OnSelect",
+    "code": "Set(varaprovacaoprotcli,\"Reprovado\");\nSet(varstatusprotcli,\"Reprovado\");\n\nIf(EditFormprotcli.Valid,\nNotify(\"Avaliação realizada com sucesso!\",NotificationType.Success,5000);\nSubmitForm(EditFormprotcli);\n,\nNotify(\"Favor preencher todos os campos\",NotificationType.Error,5000))"
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 8,
+    "control": "Detalhes impressao.pa.yaml",
+    "event": "OnVisible",
+    "code": "Set(varimprimir,true);\nSet(varitenspag,true);\n// Primeiro, limpa e coleta os dados filtrados\nClearCollect(col_regtreinados, Filter('Registros de treinamentos', 'ID-RNC' = varitemselec.ID));\n\n// Verifica quantos registros existem\nSet(qtdRegistros, CountRows(col_regtreinados));\n\n// Se houver menos de 15, adiciona linhas em branco\nIf(\nqtdRegistros < 14,\nForAll(\nSequence(14 - qtdRegistros),\nCollect(col_regtreinados, {Nome: \"\"})\n)\n)"
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 80,
+    "control": "IconBackarrow1_5",
+    "event": "OnSelect",
+    "code": "Back()"
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 103,
+    "control": "IconEdit1_9",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 142,
+    "control": "IconDelete1_5",
+    "event": "OnSelect",
+    "code": "Set(varimpressao,Blank())"
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 167,
+    "control": "IconEdit1_10",
+    "event": "OnSelect",
+    "code": "Set(varitenspag,false);\nSet(varimpressao,PDF('Detalhes impressao',{Size:\"A4\", DPI: 90, Margin: \"0mm\", Orientation: \"Landscape\"}));\nSet(varimprimir,false);\nSet(varitenspag,true)"
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 895,
+    "control": "Separator2_2",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "Detalhes impressao.pa.yaml",
+    "line": 980,
+    "control": "Icon1_1",
+    "event": "OnSelect",
+    "code": "Set(varimprimir,true)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 180,
+    "control": "NewRecordAddIcon1",
+    "event": "OnSelect",
+    "code": "NewForm(Form1); UpdateContext({ newMode: true });"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 235,
+    "control": "RecordsGallery1",
+    "event": "OnSelect",
+    "code": "UpdateContext({ itemSelected: true, CurrentItem: ThisItem })"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 249,
+    "control": "Title1_4",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 269,
+    "control": "Subtitle1_2",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 290,
+    "control": "Body1",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 317,
+    "control": "NextArrow1",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 335,
+    "control": "Separator1",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 344,
+    "control": "Rectangle1",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 397,
+    "control": "BackIconButton1",
+    "event": "OnSelect",
+    "code": "UpdateContext({ itemSelected: false })"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 443,
+    "control": "SubmitFormButton1",
+    "event": "OnSelect",
+    "code": "SubmitForm(Form1)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 470,
+    "control": "ResetFormButton1",
+    "event": "OnSelect",
+    "code": "ResetForm(Form1); UpdateContext({ editMode: false, newMode: false });"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 498,
+    "control": "EditIconButton1",
+    "event": "OnSelect",
+    "code": "UpdateContext({ editMode: true, selectedRecord: RecordsGallery1.Selected })"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 526,
+    "control": "DeleteIconButton1",
+    "event": "OnSelect",
+    "code": "UpdateContext({ deleteMode: true, deleteCancelled: false, selectedRecord: RecordsGallery1.Selected })"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 560,
+    "control": "Form1",
+    "event": "OnFailure",
+    "code": "Notify(\"Não é possível salvar. Verifique se há erros no formulário.\", NotificationType.Error)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 561,
+    "control": "Form1",
+    "event": "OnSuccess",
+    "code": "UpdateContext({ CurrentItem: Self.LastSubmit, editMode: false, newMode: false })"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 753,
+    "control": "DataCardValue54_1",
+    "event": "OnChange",
+    "code": "Reset(cxproduto_4)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 866,
+    "control": "cxproduto_4",
+    "event": "OnChange",
+    "code": "Set(vartrocarpeca,false)"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 1629,
+    "control": "CancelDeleteButton1",
+    "event": "OnSelect",
+    "code": "UpdateContext({ deleteMode: false, deleteCancelled: true })"
+  },
+  {
+    "file": "falha_entrega.pa.yaml",
+    "line": 1655,
+    "control": "ConfirmDeleteButton1",
+    "event": "OnSelect",
+    "code": "Remove([@Lista_Falha_de_Entrega], selectedRecord); If(IsEmpty(Errors([@Lista_Falha_de_Entrega], selectedRecord)), UpdateContext( { CurrentItem: First([@Lista_Falha_de_Entrega]), itemSelected: false, editMode: false, newMode: false, deleteMode: false }));"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 7,
+    "control": "Lista de 8D'S.pa.yaml",
+    "event": "OnVisible",
+    "code": "\"=If(Varperfil = \\\"User\\\",\\nSet(Varfiltrorncs,\\nFilter('Resumo dos Incidentes de qualidade',\\n    status = \\\"Em Andamento\\\" \\n    Or ((protcliente = \\\"Sim\\\" Or protcliente = \\\"Aprovado\\\" Or protcliente = \\\"Reprovado\\\" Or protcliente = \\\"Registro Pago\\\") And\\n    detector = varNome)\\n    ));\\n       \\nSet(Varfiltrorncs2,\\n    If(TipoRegistro = \\\"protcliente\\\",\\n        Filter(Varfiltrorncs,detector = varNome),\\n        Filter(Varfiltrorncs,ID in Col_Treinamentos)))\\n)\""
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 55,
+    "control": "IconRefresh1_1",
+    "event": "OnSelect",
+    "code": "Navigate(Menu_2)"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 79,
+    "control": "LblAppName1",
+    "event": "OnSelect",
+    "code": "Sort('Resumo dos Incidentes de qualidade',ID,SortOrder.Descending)"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 100,
+    "control": "IconRefresh1",
+    "event": "OnSelect",
+    "code": "\"=Refresh('Resumo dos Incidentes de qualidade');\\r\\n\\r\\nIf(Varperfil = \\\"User\\\",\\r\\nSet(Varfiltrorncs,\\r\\nFilter('Resumo dos Incidentes de qualidade',\\r\\n    status = \\\"Em Andamento\\\" \\r\\n    Or ((protcliente = \\\"Sim\\\" Or protcliente = \\\"Aprovado\\\" Or protcliente = \\\"Reprovado\\\" Or protcliente = \\\"Registro Pago\\\") And\\r\\n    detector = varNome)\\r\\n    ));\\r\\n       \\r\\nSet(Varfiltrorncs2,\\r\\n    If(TipoRegistro = \\\"protcliente\\\",\\r\\n        Filter(Varfiltrorncs,detector = varNome),\\r\\n        Filter(Varfiltrorncs,ID in Col_Treinamentos)))\\r\\n)\""
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 125,
+    "control": "IconNew",
+    "event": "OnSelect",
+    "code": "NewForm(EditFormNovoReg);\nNavigate(\n'Registro de 8D',\nScreenTransition.None,\n{edicao: false}\n)"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 222,
+    "control": "SearchIcon1",
+    "event": "OnSelect",
+    "code": "Sort('Resumo dos Incidentes de qualidade',ID,SortOrder.Descending)"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 245,
+    "control": "TextSearchBox1",
+    "event": "OnSelect",
+    "code": "Sort('Resumo dos Incidentes de qualidade',ID,SortOrder.Descending)"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 562,
+    "control": "Subtitle6_2",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 587,
+    "control": "Galeria_Registros",
+    "event": "OnSelect",
+    "code": "If(ThisItem.status = \"Relatório Inicial\",Navigate('Registro de 8D');\nEditForm(EditFormNovoReg);Navigate('Registro de 8D', ScreenTransition.None, {edicao: true}),Navigate('Detalhes de 8D''S'))"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 648,
+    "control": "Image3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 692,
+    "control": "Title1",
+    "event": "OnSelect",
+    "code": "//Navigate('Detalhes de 8D''S')"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 718,
+    "control": "Title1_1",
+    "event": "OnSelect",
+    "code": "//Navigate('Detalhes de 8D''S')"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 744,
+    "control": "Title1_2",
+    "event": "OnSelect",
+    "code": "//Navigate('Detalhes de 8D''S')"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 770,
+    "control": "Title1_3",
+    "event": "OnSelect",
+    "code": "//Navigate('Detalhes de 8D''S')"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 813,
+    "control": "Image3_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 863,
+    "control": "Button4_1",
+    "event": "OnSelect",
+    "code": "//Navigate('Detalhes de 8D''S')"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 899,
+    "control": "Button4",
+    "event": "OnSelect",
+    "code": "//Navigate('Detalhes de 8D''S')"
+  },
+  {
+    "file": "Lista de 8D'S.pa.yaml",
+    "line": 952,
+    "control": "Label12",
+    "event": "OnSelect",
+    "code": "\"=If(Varperfil = \\\"Admin\\\" Or Varperfil = \\\"Adminqual\\\" Or Varperfil = \\\"Liderqual\\\",\\n        If(ThisItem.status = \\\"Relatório Inicial\\\",\\n            EditForm(EditFormNovoReg); Navigate('Registro de 8D',ScreenTransition.None,{edicao: true})\\n            ,\\n            Navigate('Detalhes de 8D''S'))\\n            ,\\n                    \\n            Navigate('Detalhes de 8D''S'));\\n\\nSet(varitemselec,ThisItem)\""
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 7,
+    "control": "Menu_2",
+    "event": "OnVisible",
+    "code": "Set(varocultarOcorr,false);\nSet(varocultarintcli,false);\nSet(varocultarconfig,false);\nSet(varocultarprotcli,false);"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 138,
+    "control": "ButtonCanvas2_10",
+    "event": "OnSelect",
+    "code": "Set(varocultarOcorr,If(varocultarOcorr = false,true,false));\nSet(varocultarfalhaentrega,false);\nSet(varocultarintcli,false);\nSet(varocultarconfig,false);\nSet(varocultarprotcli,false);"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 163,
+    "control": "ButtonCanvas2_11",
+    "event": "OnSelect",
+    "code": "Navigate('Lista de 8D''S');\nSet(TipoRegistro , \"Cliente\");"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 199,
+    "control": "ButtonCanvas2_12",
+    "event": "OnSelect",
+    "code": "Navigate('Lista de 8D''S');\nReset(Gallery5_2);\nSet(TipoRegistro, \"Interno\");"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 236,
+    "control": "ButtonCanvas2_13",
+    "event": "OnSelect",
+    "code": "Navigate('Lista de 8D''S');\nReset(Gallery5_2);\nSet(TipoRegistro , \"Tudo\");"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 273,
+    "control": "ButtonCanvas2_18",
+    "event": "OnSelect",
+    "code": "Set(varocultarprotcli,If(varocultarprotcli = false,true,false));\nSet(varocultarfalhaentrega,false);\nSet(varocultarOcorr,false);\nSet(varocultarintcli,false);\nSet(varocultarconfig,false);"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 301,
+    "control": "ButtonCanvas2_20",
+    "event": "OnSelect",
+    "code": "NewForm(EditFormNovoReg_1);\nNavigate(Registroprotcli,ScreenTransition.None,{edicao: false});\nSet(varmodo,\"Proteção ao cliente\")"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 329,
+    "control": "ButtonCanvas2_19",
+    "event": "OnSelect",
+    "code": "Navigate('Lista de 8D''S');\nReset(Gallery5_2);\nSet(TipoRegistro , \"protcliente\");"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 357,
+    "control": "ButtonCanvas2_22",
+    "event": "OnSelect",
+    "code": "Set(varocultarintcli,If(varocultarintcli = false,true,false));\nSet(varocultarfalhaentrega,false);\nSet(varocultarOcorr,false);\nSet(varocultarconfig,false);\nSet(varocultarprotcli,false);"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 396,
+    "control": "ButtonCanvas2_15",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 421,
+    "control": "btnConfiguracoes",
+    "event": "OnSelect",
+    "code": "Set(varocultarconfig,If(varocultarconfig = false,true,false));\nSet(varocultarfalhaentrega,false);\nSet(varocultarOcorr,false);\nSet(varocultarintcli,false);\nSet(varocultarprotcli,false);"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 459,
+    "control": "ButtonCanvas2_17",
+    "event": "OnSelect",
+    "code": "Navigate(Cadastro_usuarios)"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 492,
+    "control": "ButtonCanvas2_21",
+    "event": "OnSelect",
+    "code": "Navigate(Pagamento_Protecao_ao_cliente)"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 525,
+    "control": "ButtonCanvas2_24",
+    "event": "OnSelect",
+    "code": "Navigate(Verif_user)"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 559,
+    "control": "ButtonCanvas2_14",
+    "event": "OnSelect",
+    "code": "Set(varocultarfalhaentrega,If(varocultarfalhaentrega = false,true,false));\nSet(varocultarintcli,false);\nSet(varocultarOcorr,false);\nSet(varocultarconfig,false);\nSet(varocultarprotcli,false);"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 598,
+    "control": "ButtonCanvas2_23",
+    "event": "OnSelect",
+    "code": "Navigate(falha_entrega)"
+  },
+  {
+    "file": "Menu_2.pa.yaml",
+    "line": 740,
+    "control": "Timer1_2",
+    "event": "OnTimerStart",
+    "code": "Set(varhoraatual,Now());\nSet(varhoraatualsp,LookUp(data_hora_atual_apprnc,ID = 1,Modificado));\nSet(varserver,DateDiff(varhoraatualsp,varhoraatual,TimeUnit.Minutes))"
+  },
+  {
+    "file": "Pagamento_Protecao_ao_cliente.pa.yaml",
+    "line": 47,
+    "control": "Icon3_2",
+    "event": "OnSelect",
+    "code": "Back()"
+  },
+  {
+    "file": "Pagamento_Protecao_ao_cliente.pa.yaml",
+    "line": 139,
+    "control": "Icon8",
+    "event": "OnSelect",
+    "code": "ForAll(\nGallery_Lista_Protecao_ao_Cliente.AllItems,\nPatch(\n'Resumo dos Incidentes de qualidade',\nThisRecord, // Isso garante que você está se referindo ao registro existente\n{\nprotcliente: \"Registro Pago\",\ndata_pagamento: Today() - 1\n}\n)\n);\n\nRefresh('Resumo dos Incidentes de qualidade')"
+  },
+  {
+    "file": "Pagamento_Protecao_ao_cliente.pa.yaml",
+    "line": 213,
+    "control": "Title5_2",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Pagamento_Protecao_ao_cliente.pa.yaml",
+    "line": 238,
+    "control": "Subtitle3_3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Pagamento_Protecao_ao_cliente.pa.yaml",
+    "line": 263,
+    "control": "Subtitle3_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Pagamento_Protecao_ao_cliente.pa.yaml",
+    "line": 288,
+    "control": "Title5_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 7,
+    "control": "Rastreabilidade_Controle_Prod_1",
+    "event": "OnVisible",
+    "code": "Reset(Gallery3_10);\nReset(Gallery3_11);\nReset(Gallery3_9);\nReset(Gallery3_1);\nReset(Gallery2);\n\nSet(varformrast2,true);\nSet(varformrast,false);\nSet(ligartimer,false);\n\nClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\n\nClearCollect(col_lotes_sap_reg,Filter(lotes_sap_reg,idrnc = varitemselec.ID));\n\nClearCollect(col_lotes_sap_reg_split1,\nUngroup( ForAll(col_lotes_sap_reg,{IDRNC:idrnc ,Seqrel:titulo, Lotes: Split(lote,\",\")}),Lotes));\n\nClearCollect( col_lotes_sap_reg_split2,DropColumns(\nAddColumns( col_lotes_sap_reg_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nData, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_etiquetas_vivas,Filter(etiquetas_vivas,idrnc = varitemselec.ID));\n\nClearCollect(col_etiquetas_vivas_split1,\nUngroup( ForAll(col_etiquetas_vivas,{IDRNC:idrnc ,Seqrel:titulo, etiquetasap: Split(etiquetasap,\",\")}),etiquetasap));\n\nClearCollect( col_etiquetas_vivas_split2,DropColumns(\nAddColumns( col_etiquetas_vivas_split1,\nproduto, First(Split(Value, \":\")).Value,\netiquetasap, Last(FirstN(Split(Value, \":\"), 2)).Value,\nLote, Last(FirstN(Split(Value, \":\"), 3)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 4)).Value,\nDeposito, Last(FirstN(Split(Value, \":\"), 5)).Value,\nData, Last(FirstN(Split(Value, \":\"), 6)).Value,\nBloqueio, Last(FirstN(Split(Value, \":\"), 7)).Value,\nStatusBloqueio, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_rast_cabeceiras,Filter(rast_cabeceiras,idrnc = varitemselec.ID));\n\nClearCollect(col_rast_cabeceiras_split1,\nUngroup( ForAll(col_rast_cabeceiras,{IDRNC:idrnc ,Seqrel:titulo,produto: Split(produto,\",\")}),produto));\n\nClearCollect( col_rast_cabeceiras_split2,DropColumns(\nAddColumns( col_rast_cabeceiras_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nEstoque, Last(Split(Value, \":\")).Value ),Value));\n\n\nSet(varformrast2,false);"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 113,
+    "control": "IconCancel1_3",
+    "event": "OnSelect",
+    "code": "Back()"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 134,
+    "control": "IconCancel1_4",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 176,
+    "control": "IconCancel1_8",
+    "event": "OnSelect",
+    "code": "Reset(Gallery3_10);\nReset(Gallery3_11);\nReset(Gallery3_9);\nReset(Gallery3_1);\nReset(Gallery2);\n\nSet(varformrast,false);\nSet(ligartimer,false);\n\nClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\n\nClearCollect(col_lotes_sap_reg,\nFilter(lotes_sap_reg,idrnc = varitemselec.ID));\n\nClearCollect(col_lotes_sap_reg_split1,\nUngroup( ForAll(col_lotes_sap_reg,{IDRNC:idrnc ,Seqrel:titulo, Lotes: Split(lote,\",\")}),Lotes));\n\nClearCollect( col_lotes_sap_reg_split2,DropColumns(\nAddColumns( col_lotes_sap_reg_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nData, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_etiquetas_vivas,\nFilter(etiquetas_vivas,idrnc = varitemselec.ID));\n\nClearCollect(col_etiquetas_vivas_split1,\nUngroup( ForAll(col_etiquetas_vivas,{IDRNC:idrnc ,Seqrel:titulo, etiquetasap: Split(etiquetasap,\",\")}),etiquetasap));\n\nClearCollect( col_etiquetas_vivas_split2,DropColumns(\nAddColumns( col_etiquetas_vivas_split1,\nproduto, First(Split(Value, \":\")).Value,\netiquetasap, Last(FirstN(Split(Value, \":\"), 2)).Value,\nLote, Last(FirstN(Split(Value, \":\"), 3)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 4)).Value,\nDeposito, Last(FirstN(Split(Value, \":\"), 5)).Value,\nData, Last(FirstN(Split(Value, \":\"), 6)).Value,\nBloqueio, Last(FirstN(Split(Value, \":\"), 7)).Value,\nStatusBloqueio, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_rast_cabeceiras,\nFilter(rast_cabeceiras,idrnc = varitemselec.ID));\n\nClearCollect(col_rast_cabeceiras_split1,\nUngroup( ForAll(col_rast_cabeceiras,{IDRNC:idrnc ,Seqrel:titulo,produto: Split(produto,\",\")}),produto));\n\nClearCollect( col_rast_cabeceiras_split2,DropColumns(\nAddColumns( col_rast_cabeceiras_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nEstoque, Last(Split(Value, \":\")).Value ),Value));"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 252,
+    "control": "IconCancel1_11",
+    "event": "OnSelect",
+    "code": "If(CountRows( Filter(col_listarastreab,seq_relacionada = 0)) > 0,\nNewForm(EditForm1_11);\nSet(var_seq,RandBetween(10000000,100000000000000));\nSet(varcomando,\"rp\");\n,\nNewForm(EditForm1_10);\nSet(var_seq,0);\nSet(varcomando,\"rp\"));\n\nSet(varformrast, true);"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 622,
+    "control": "Separator3_12",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 752,
+    "control": "Verif_2",
+    "event": "OnSelect",
+    "code": "Set(var_seq,ThisItem.seq_relacionada);\nSet(varcomando,\"rp\");\n\nIf(ThisItem.Status = \"E\",\nIf(ThisItem.seq_relacionada = 0,\nEditForm(EditForm1_10);\nSet(varformrast,true);\n,\nEditForm(EditForm1_11);\nSet(varformrast,true);\n),\nNotify(\"Solicitação em fila ou já rastreada!\",NotificationType.Information,5000));"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 784,
+    "control": "Verif_1",
+    "event": "OnSelect",
+    "code": "\"=/*Set(var_seq;ThisItem.seq_relacionada);;\\r\\nSet(varcomando;\\\"bp\\\");;\\r\\nIf(ThisItem.Status = \\\"R\\\";  \\r\\n    If(ThisItem.Status_bloq = \\\"E\\\" Or IsBlank(ThisItem.Status_bloq);\\r\\n        If(ThisItem.seq_relacionada = 0; \\r\\n        EditForm(EditForm1_10);;\\r\\n        Set(varformrast;true);;\\r\\n        ClearCollect(colpeçasaa3_comp;Filter(colpecasgerais_AA3;Material = ThisItem.cod_produto));;\\r\\n        ;\\r\\n        EditForm(EditForm1_11);;\\r\\n        Set(varformrast;true);;\\r\\n        ClearCollect(colpeçasaa3_comp;Filter(colpecasgerais_AA3;Material = ThisItem.cod_produto));;\\r\\n        );\\r\\n        Notify(\\\"Etiquetas já bloqueadas!\\\";NotificationType.Information;5000));\\r\\n        Notify(\\\"Favor primeiro realizar o rastreamento das etiquetas!\\\";NotificationType.Information;5000))\\r\\n        ;;*/\\r\\n\\r\\n    \\r\\n\""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 804,
+    "control": "Verif",
+    "event": "OnSelect",
+    "code": "\"=Set(var_seq,ThisItem.seq_relacionada);\\r\\nSet(varcomando,\\\"vp\\\");\\r\\n\\r\\nIf(ThisItem.Status = \\\"R\\\",\\r\\nIf(ThisItem.seq_relacionada = 0, \\r\\n    EditForm(EditForm1_10);\\r\\n    Set(varformrast,true);\\r\\n   ,\\r\\n    EditForm(EditForm1_11);\\r\\n    Set(varformrast,true);\\r\\n    ),\\r\\n    Notify(\\\"Favor primeiro realizar o rastreamento e bloqueio das etiquetas!\\\",NotificationType.Information,5000))\\r\\n    ; \""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 851,
+    "control": "Icon8_1",
+    "event": "OnSelect",
+    "code": "Remove('Lista de Rastreabilidade',ThisItem);\n\nClearCollect(col_lotes_sap_reg,Filter(lotes_sap_reg,idrnc = varitemselec.ID And titulo = Text(ThisItem.seq_relacionada)));\nForAll(col_lotes_sap_reg,Remove(lotes_sap_reg,ThisRecord));\n\nClearCollect(col_etiquetas_vivas,Filter(etiquetas_vivas,idrnc = varitemselec.ID And titulo = Text(ThisItem.seq_relacionada)));\nForAll(col_etiquetas_vivas,Remove(etiquetas_vivas,ThisRecord));\n\nClearCollect(col_rast_cabeceiras,Filter(rast_cabeceiras,idrnc = varitemselec.ID And titulo = Text(ThisItem.seq_relacionada)));\nForAll(col_rast_cabeceiras,Remove(rast_cabeceiras,ThisRecord));\n\nClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\n\n\n//----------------------------------------------Atualizar------------------------------------------------------\n\nClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\n\nClearCollect(col_lotes_sap_reg,\nFilter(lotes_sap_reg,idrnc = varitemselec.ID));\n\nClearCollect(col_lotes_sap_reg_split1,\nUngroup( ForAll(col_lotes_sap_reg,{IDRNC:idrnc ,Seqrel:titulo, Lotes: Split(lote,\",\")}),Lotes));\n\nClearCollect( col_lotes_sap_reg_split2,DropColumns(\nAddColumns( col_lotes_sap_reg_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nData, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_etiquetas_vivas,\nFilter(etiquetas_vivas,idrnc = varitemselec.ID));\n\nClearCollect(col_etiquetas_vivas_split1,\nUngroup( ForAll(col_etiquetas_vivas,{IDRNC:idrnc ,Seqrel:titulo, etiquetasap: Split(etiquetasap,\",\")}),etiquetasap));\n\nClearCollect( col_etiquetas_vivas_split2,DropColumns(\nAddColumns( col_etiquetas_vivas_split1,\nproduto, First(Split(Value, \":\")).Value,\netiquetasap, Last(FirstN(Split(Value, \":\"), 2)).Value,\nLote, Last(FirstN(Split(Value, \":\"), 3)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 4)).Value,\nDeposito, Last(FirstN(Split(Value, \":\"), 5)).Value,\nData, Last(FirstN(Split(Value, \":\"), 6)).Value,\nBloqueio, Last(FirstN(Split(Value, \":\"), 7)).Value,\nStatusBloqueio, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_rast_cabeceiras,\nFilter(rast_cabeceiras,idrnc = varitemselec.ID));\n\nClearCollect(col_rast_cabeceiras_split1,\nUngroup( ForAll(col_rast_cabeceiras,{IDRNC:idrnc ,Seqrel:titulo,produto: Split(produto,\",\")}),produto));\n\nClearCollect( col_rast_cabeceiras_split2,DropColumns(\nAddColumns( col_rast_cabeceiras_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nEstoque, Last(Split(Value, \":\")).Value ),Value));"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 963,
+    "control": "IconCancel1_9",
+    "event": "OnSelect",
+    "code": "Reset(Gallery3_1);\nReset(Gallery3_10);\nReset(Gallery3_11);\nReset(Gallery3_9);"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 998,
+    "control": "itemtxt1_5",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1079,
+    "control": "TIttlebloq_3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1127,
+    "control": "itemtxt_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1153,
+    "control": "lotetxt_13",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1179,
+    "control": "qtdtxt_11",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1205,
+    "control": "datatxt_11",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1244,
+    "control": "Separator3_10",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1277,
+    "control": "itemtxt1_2",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1303,
+    "control": "lotetxt_20",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1329,
+    "control": "qtdtxt_18",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1355,
+    "control": "datatxt_16",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1434,
+    "control": "TIttlebloq_4",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1481,
+    "control": "itemtxt2_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1506,
+    "control": "lotetxt_18",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1531,
+    "control": "qtdtxt_16",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1556,
+    "control": "localizacaotxt_20",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1587,
+    "control": "Separator3_7",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1618,
+    "control": "itemtxt3_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1642,
+    "control": "lotetxt_21",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1666,
+    "control": "qtdtxt_19",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1690,
+    "control": "localizacaotxt_21",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1770,
+    "control": "TIttlebloq_5",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1817,
+    "control": "produtotxt_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1842,
+    "control": "etiquetatxt_16",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1867,
+    "control": "lotetxt_22",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1892,
+    "control": "qtdtxt_20",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1917,
+    "control": "datatxt_17",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1942,
+    "control": "localizacaotxt_22",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1967,
+    "control": "bloqtxt_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 1992,
+    "control": "verbloqtxt_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2030,
+    "control": "Separator3_11",
+    "event": "OnSelect",
+    "code": "Select(Parent)"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2062,
+    "control": "produtotxt1_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2086,
+    "control": "etiquetatxt_17",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2110,
+    "control": "lotetxt_23",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2134,
+    "control": "qtdtxt_21",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2158,
+    "control": "datatxt_18",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2182,
+    "control": "localizacaotxt_23",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2212,
+    "control": "blotxt1_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2241,
+    "control": "verbloqtxt1_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2284,
+    "control": "Timer2_5",
+    "event": "OnTimerEnd",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2285,
+    "control": "Timer2_5",
+    "event": "OnTimerStart",
+    "code": "\"=ClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\\n\\nSwitch(\\n    LookUp(col_listarastreab,seq_relacionada = var_seq And varcomando = comando,status_geral),\\n    \\\"E\\\",Set(ligartimer,false);\\n        Notify(\\\"Erro no fluxo favor verificar informações\\\",NotificationType.Error,5000);,\\n    \\\"R\\\",Set(ligartimer,false);\\n        Notify(\\\"Item rastreado com sucesso!\\\",NotificationType.Success,5000);\\n        \\n        ClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\\n\\nClearCollect(col_lotes_sap_reg,\\nFilter(lotes_sap_reg,idrnc = varitemselec.ID));\\n\\nClearCollect(col_lotes_sap_reg_split1,\\nUngroup( ForAll(col_lotes_sap_reg,{IDRNC:idrnc ,Seqrel:titulo, Lotes: Split(lote,\\\",\\\")}),Lotes));\\n\\nClearCollect( col_lotes_sap_reg_split2,DropColumns( \\n    AddColumns( col_lotes_sap_reg_split1,\\n    Produto, First(Split(Value, \\\":\\\")).Value, \\n    Lote, Last(FirstN(Split(Value, \\\":\\\"), 2)).Value,  \\n    Qtd, Last(FirstN(Split(Value, \\\":\\\"), 3)).Value, \\n    Data, Last(Split(Value, \\\":\\\")).Value ),Value)\\n    );\\n\\nClearCollect(col_etiquetas_vivas,\\nFilter(etiquetas_vivas,idrnc = varitemselec.ID));\\n\\nClearCollect(col_etiquetas_vivas_split1,\\nUngroup( ForAll(col_etiquetas_vivas,{IDRNC:idrnc ,Seqrel:titulo, etiquetasap: Split(etiquetasap,\\\",\\\")}),etiquetasap));\\n\\nClearCollect( col_etiquetas_vivas_split2,DropColumns( \\n    AddColumns( col_etiquetas_vivas_split1, \\n    produto, First(Split(Value, \\\":\\\")).Value, \\n    etiquetasap, Last(FirstN(Split(Value, \\\":\\\"), 2)).Value,\\n    Lote, Last(FirstN(Split(Value, \\\":\\\"), 3)).Value,\\n    Qtd, Last(FirstN(Split(Value, \\\":\\\"), 4)).Value,\\n    Deposito, Last(FirstN(Split(Value, \\\":\\\"), 5)).Value,\\n    Data, Last(FirstN(Split(Value, \\\":\\\"), 6)).Value,\\n    Bloqueio, Last(FirstN(Split(Value, \\\":\\\"), 7)).Value,     \\n    StatusBloqueio, Last(Split(Value, \\\":\\\")).Value ),Value)\\n    );\\n\\nClearCollect(col_rast_cabeceiras,\\nFilter(rast_cabeceiras,idrnc = varitemselec.ID));\\n\\nClearCollect(col_rast_cabeceiras_split1,\\nUngroup( ForAll(col_rast_cabeceiras,{IDRNC:idrnc ,Seqrel:titulo,produto: Split(produto,\\\",\\\")}),produto));\\n\\nClearCollect( col_rast_cabeceiras_split2,DropColumns( \\n    AddColumns( col_rast_cabeceiras_split1, \\n    Produto, First(Split(Value, \\\":\\\")).Value, \\n    Lote, Last(FirstN(Split(Value, \\\":\\\"), 2)).Value, \\n    Qtd, Last(FirstN(Split(Value, \\\":\\\"), 3)).Value, \\n    Estoque, Last(Split(Value, \\\":\\\")).Value ),Value));\\n        \\n        );\\n    \\n    \""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2360,
+    "control": "Iconocorr_3",
+    "event": "OnSelect",
+    "code": "SubmitForm(EditForm1_10)"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2381,
+    "control": "Iconrel_3",
+    "event": "OnSelect",
+    "code": "If(Len(DataCardValue55_9.Text) < 5,\nNotify(\"O código do lote deve conter pelo menos 5 dígitos\",NotificationType.Error,5000),\nSubmitForm(EditForm1_11))"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2418,
+    "control": "Icon5_10",
+    "event": "OnSelect",
+    "code": "Set(varformrast,false);\nResetForm(EditForm1_10);\nResetForm(EditForm1_11)"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 2438,
+    "control": "EditForm1_10",
+    "event": "OnSuccess",
+    "code": "Set(ligartimer,true);\nSet(varformrast,false);"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 3718,
+    "control": "EditForm1_11",
+    "event": "OnSuccess",
+    "code": "Set(ligartimer,true);\nSet(varformrast,false);"
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 3767,
+    "control": "Radio1_2",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 4033,
+    "control": "cxproduto_2",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 4067,
+    "control": "cxsubcomp_1",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Rastreabilidade_Controle_Prod_1.pa.yaml",
+    "line": 4233,
+    "control": "cxcomp_3",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 7,
+    "control": "Registro de 8D.pa.yaml",
+    "event": "OnVisible",
+    "code": "ClearCollect(varReincidente,'Resumo dos Incidentes de qualidade');\nIf(edicao,\nSet(vartrocarpeca,true),\nSet(vartrocarpeca,false))"
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 59,
+    "control": "IconAccept1",
+    "event": "OnSelect",
+    "code": "SubmitForm(EditFormNovoReg)"
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 105,
+    "control": "IconCancel1",
+    "event": "OnSelect",
+    "code": "ResetForm(EditFormNovoReg);Back()"
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 136,
+    "control": "EditFormNovoReg",
+    "event": "OnSuccess",
+    "code": "// If (edicao = false;\n//    Set(PatchTimervisible;true);;\n//    Set(Galeriaselect;EditForm1.LastSubmit);;\n//Navigate('Tela de impressão');\nNavigate('Lista de 8D''S')"
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 952,
+    "control": "cxcliente",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 1084,
+    "control": "DataCardValue4_1",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 1181,
+    "control": "RadioGroupCanvas1_1",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 1290,
+    "control": "cxproduto_1",
+    "event": "OnChange",
+    "code": "Set(vartrocarpeca,false)"
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 1323,
+    "control": "cxsubcomp",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 1438,
+    "control": "cxcomp_1",
+    "event": "OnChange",
+    "code": "Set(vartrocarpeca,false)"
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 2033,
+    "control": "DataCardValue20",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 2672,
+    "control": "Title2",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 2695,
+    "control": "Label1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 2712,
+    "control": "Label1_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Registro de 8D.pa.yaml",
+    "line": 4621,
+    "control": "DataCardValue4_2",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 7,
+    "control": "Registroprotcli",
+    "event": "OnVisible",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 56,
+    "control": "IconAccept1_1",
+    "event": "OnSelect",
+    "code": "If(Len(codrasttxt_1.Text)<>9,\nNotify(\"A Etiqueta SAP deve conter 9 Dígitos!\",NotificationType.Error,5000),\nSubmitForm(EditFormNovoReg_1))"
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 104,
+    "control": "IconCancel1_1",
+    "event": "OnSelect",
+    "code": "ResetForm(EditFormNovoReg_1);Back()"
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 126,
+    "control": "EditFormNovoReg_1",
+    "event": "OnSuccess",
+    "code": "Navigate('Lista de 8D''S');\nReset(Gallery5_2);\nSet(TipoRegistro , \"protcliente\");"
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 318,
+    "control": "DataCardValue4_4",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 569,
+    "control": "cxcliente_1",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 646,
+    "control": "RadioGroupCanvas1",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 745,
+    "control": "cxproduto_3",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 778,
+    "control": "cxsubcomp_2",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 891,
+    "control": "cxcomp_2",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 1339,
+    "control": "DataCardValue20_1",
+    "event": "OnChange",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 1546,
+    "control": "Title2_1",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 1569,
+    "control": "Label1_2",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Registroprotcli.pa.yaml",
+    "line": 1586,
+    "control": "Label1_3",
+    "event": "OnSelect",
+    "code": ""
+  },
+  {
+    "file": "Verif_user.pa.yaml",
+    "line": 7,
+    "control": "Verif_user",
+    "event": "OnVisible",
+    "code": "UpdateContext({resettext: !resettext});\nUpdateContext({MostrarMensagem: false})"
+  },
+  {
+    "file": "Verif_user.pa.yaml",
+    "line": 236,
+    "control": "Button1_4",
+    "event": "OnSelect",
+    "code": "If(\nIsBlank(LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text))),\nSet(Varperfil,\"User\");\nSet(varRE,Value(Logintxt_1.Text));\nSet(varNome,LookUp(varPessoas,Title = Logintxt_1.Text,field_1));\nClearCollect(Col_Treinamentos,Distinct(Filter('Registros de treinamentos','RE:' = varRE),'ID-RNC'));\nNavigate(Menu_2);\n,\nIf(\n!IsBlank(LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text) And Senha = Senhatxt_1.Text)),\nSet(varRE,Value(Logintxt_1.Text));\nSet(Varperfil,LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text) And Senha = Senhatxt_1.Text,Título));\nSet(varNome,LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text) And Senha = Senhatxt_1.Text,nome));\nClearCollect(Col_Treinamentos,Distinct(Filter('Registros de treinamentos','RE:' = varRE),'ID-RNC'));\nNavigate(Menu_2);\nUpdateContext({MostrarMensagem: false}),\nUpdateContext({MostrarMensagem: true})))"
+  },
+  {
+    "file": "Verif_user.pa.yaml",
+    "line": 297,
+    "control": "Timer1_1",
+    "event": "OnTimerStart",
+    "code": "Set(varhoraatual,Now());\nSet(varhoraatualsp,LookUp(data_hora_atual_apprnc,ID = 1,Modificado));\nSet(varserver,DateDiff(varhoraatualsp,varhoraatual,TimeUnit.Minutes))"
+  }
+]

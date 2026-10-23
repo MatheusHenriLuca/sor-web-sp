@@ -1,0 +1,742 @@
+
+======================================================
+CARD 1: cliente_res_DataCard1 | DataField: cliente_res
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: RadioGroupCanvas3.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.cliente_res
+    Required: =true
+    Update: =RadioGroupCanvas3.Selected
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: Label
+    Text: ="Informações do cliente"
+    Control: Classic/Icon
+    - RadioGroupCanvas3:
+    Control: Radio
+    DefaultSelectedItems: =First(Choices([@'Resumo dos Incidentes de qualidade'].cliente_res))
+    Control: Label
+    Text: ="Cliente:"
+
+======================================================
+CARD 2: Tipo de RNC_DataCard1 | DataField: Tipo_x0020_de_x0020_RNC
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: tipoocorrtxt.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.ocorrencia
+    Required: =true
+    Update: =tipoocorrtxt.Selected
+    Control: Label
+    Text: ="Ocorrência:"
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =If(TipoRegistro = "Interno",["Interno"],ThisItem.ocorrencia)
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 3: Origem do 8D interno_DataCard1 | DataField: Origem_x0020_do_x0020_8D_x0020_i
+Visible: If(tipoocorrtxt.Selected.Value = "Interno", true,false)
+Update: DataCardValue26.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.setor_deteccao
+    Required: =If(tipoocorrtxt.Selected.Value = "Interno", true,false)
+    Update: =DataCardValue26.Selected
+    Control: Label
+    Text: ="Área de detecção:"
+    - DataCardValue26:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.cod_ocorrencia
+    Required: =If(tipoocorrtxt.Selected.Value = "Formal", true,false)
+    Update: =DataCardValue10.Text
+    Control: Label
+    Text: ="Código da ocorrência (cliente):"
+    - DataCardValue10:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 4: data_oficializacao_DataCard1 | DataField: data_oficializacao
+Visible: If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value), true,false)
+Update: DateAdd(DataCardValue17.SelectedDate, 12, TimeUnit.Hours)
+    Control: TypedDataCard
+    Default: =ThisItem.data_oficializacao
+    Required: =If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value), true,false)
+    Update: =DateAdd(DataCardValue17.SelectedDate, 12, TimeUnit.Hours)
+    Control: Label
+    Text: ="Data de oficialização no portal:"
+    - DataCardValue17:
+    Control: Classic/DatePicker
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.Classificação
+    Required: =true
+    Update: =DataCardValue27.Selected
+    Control: Label
+    Text: ="Setor responsável"
+    - DataCardValue27:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.data_ocorrencia
+    Required: =true
+    Update: =DateValue1.SelectedDate
+    Control: Label
+    Text: ="Data da ocorrência"
+    Control: Classic/DatePicker
+    Control: Label
+    Text: =":"
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 5: Turno_DataCard1 | DataField: field_11
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: DataCardValue19.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.turno
+    Required: =true
+    Update: =DataCardValue19.Selected
+    Control: Label
+    Text: ="Turno da ocorrência:"
+    - DataCardValue19:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 6: Cliente_DataCard2 | DataField: field_6
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: cxcliente.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.cliente
+    Required: =true
+    Update: =cxcliente.Selected
+    Control: Label
+    Text: ="Cliente:"
+    - cxcliente:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 7: final_componente_DataCard1 | DataField: final_componente
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: RadioGroupCanvas1_1.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.final_componente
+    Required: =true
+    Update: =RadioGroupCanvas1_1.Selected
+    Control: Label
+    Text: ="Item detectado é um produto final ou um componente?"
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    - RadioGroupCanvas1_1:
+    Control: Radio
+    DefaultSelectedItems: =If(edicao, [Parent.Default],["Peça Final"])
+
+======================================================
+CARD 8: Produto1_DataCard1 | DataField: Produto1
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: 
+    Control: TypedDataCard
+    Default: =ThisItem.produto
+    Required: |-
+    Update: |-
+    Control: Label
+    Text: |-
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    - cxproduto_1:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |-
+    - cxsubcomp:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Filter(colpecasgerais_AA3,Left(Componente,9) = Left(ThisItem.produto,9))
+
+======================================================
+CARD 9: Componente_DataCard1 | DataField: Componente
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: Image1.Image
+    Control: TypedDataCard
+    Default: =ThisItem.componente
+    Required: |-
+    Update: |-
+    Control: Label
+    Text: |+
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    - cxcomp_1:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |+
+    Control: TypedDataCard
+    Default: =ThisItem.foto_ocorrencia
+    Required: '=false  '
+    Update: =Image1.Image
+    Control: Label
+    Text: ="Evidência da ocorrência:"
+    - Image1:
+    Control: Image
+    - AddPicture1:
+    Control: AddMedia
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 10: Quantidade_DataCard1 | DataField: field_10
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: Value(DataCardValue18.Text)
+    Control: TypedDataCard
+    Default: =ThisItem.quantidade
+    Required: =true
+    Update: =Value(DataCardValue18.Text)
+    Control: Label
+    Text: =If(tipoocorrtxt.Selected.Value = "Interno","Quantidade não conforme:","Quantidade não conforme no cliente:")
+    - DataCardValue18:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.descricao_ocorrencia
+    Required: =If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = "Informal",true,false)
+    Update: =DataCardValue23.Text
+    Control: Label
+    Text: ="Descrição da ocorrência do cliente:"
+    - DataCardValue23:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.local_deteccao
+    Required: =If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = "Informal",true,false)
+    Update: =DataCardValue22.Text
+    Control: Label
+    Text: ="Local de detecção do cliente:"
+    - DataCardValue22:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 11: Impacto no Cliente_DataCard1 | DataField: field_16
+Visible: If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = "Informal",true,false)
+Update: DataCardValue24.Text
+    Control: TypedDataCard
+    Default: =ThisItem.impacto_cliente
+    Required: =If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = "Informal",true,false)
+    Update: =DataCardValue24.Text
+    Control: Label
+    Text: ="Impacto no cliente:"
+    - DataCardValue24:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.detalhamento_ocorrencia
+    Required: =If(tipoocorrtxt.Selected.Value = "Formal" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = "Informal",true,false)
+    Update: =DataCardValue56.Text
+    Control: Label
+    Text: ="Detalhamento da ocorrência (cliente):"
+    - DataCardValue56:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 12: Defeito_DataCard1 | DataField: field_12
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: DataCardValue20.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.classificacao_ocorrencia
+    Required: =true
+    Update: =DataCardValue20.Selected
+    Control: Label
+    Text: ="Classificação da ocorrência:"
+    - DataCardValue20:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.'co-produto'
+    Required: =false
+    Update: =DataCardValue51.Selected
+    Control: Label
+    Text: ="A peça é co-produto? (Peças espelho - lado esquerdo e direito)"
+    - DataCardValue51:
+    Control: Classic/ComboBox
+    Default: =Parent.Default
+    DefaultSelectedItems: |-
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: Label
+    Text: ="Informações de contenção"
+    Control: Classic/Icon
+    Control: Classic/TextInput
+    Default: =cxcomp_1.Selected.COPRODUTOS
+    Control: TypedDataCard
+    Default: =ThisItem.carryover
+    Required: =false
+    Update: =DataCardValue42.Selected
+    Control: Label
+    Text: ="A peça é carry over? (Itens que são utilizados em mais de um produto)"
+    - DataCardValue42:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |-
+    Control: Label
+    Text: ="*"
+    Control: Classic/TextInput
+    Default: =If(cxcomp_1.Selected.'CarryOver?' = "Sim" , Concat(Filter(colpecasgerais_AA3  ,Componente = cxcomp_1.Selected.Componente),Material," - "),"")
+
+======================================================
+CARD 13: Severidade FMEA_DataCard1 | DataField: field_13
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: DataCardValue21.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.caracteristicas_segurança
+    Required: =false
+    Update: =DataCardValue21.Selected
+    Control: Label
+    Text: ="Possui características de segurança?"
+    - DataCardValue21:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |-
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: Classic/TextInput
+    Default: =cxproduto_1.Selected.Característica
+
+======================================================
+CARD 14: Reincidente_DataCard2 | DataField: field_8
+Visible: Parent.DisplayMode=DisplayMode.Edit
+Update: reinctxt.Text
+    Control: TypedDataCard
+    Default: =ThisItem.reincidente
+    Required: =edicao
+    Update: =reinctxt.Text
+    Control: Label
+    Text: ="Reincidente?"
+    Control: Classic/TextInput
+    Default: |-
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 15: data_reinc_DataCard1 | DataField: data_reinc
+Visible: false
+Update: DataCardValue57.Text
+    Control: TypedDataCard
+    Default: =ThisItem.data_reinc
+    Required: =false
+    Update: =DataCardValue57.Text
+    Control: Label
+    Text: =Parent.DisplayName
+    - DataCardValue57:
+    Control: Classic/TextInput
+    Default: |-
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 16: Reincidente2_DataCard3 | DataField: 
+Visible: If(reinctxt.Text = "NÃO" ,false,true)
+Update: 
+    Control: TypedDataCard
+    Required: =false
+    Control: Gallery
+    Control: GroupContainer
+    Control: Label
+    Text: |-
+    Control: Label
+    Text: =ThisItem.data_ocorrencia
+    Control: Label
+    Text: =ThisItem.classificacao_ocorrencia.Value
+
+======================================================
+CARD 17: Posto1_DataCard1 | DataField: Posto1
+Visible: edicao
+Update: cxposto.Selected.Value
+    Control: TypedDataCard
+    Default: =ThisItem.posto_cadastrado
+    Required: =edicao
+    Update: =cxposto.Selected.Value
+    Control: Label
+    Text: ="Posto de trabalho cadastrado:"
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    - cxposto:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |-
+
+======================================================
+CARD 18: fmds_DataCard1 | DataField: fmds
+Visible: edicao
+Update: cxfmds.Selected.Value
+    Control: TypedDataCard
+    Default: =ThisItem.fmds
+    Required: =edicao
+    Update: =cxfmds.Selected.Value
+    Control: Label
+    Text: ="Classificação da área:"
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    - cxfmds:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |-
+
+======================================================
+CARD 19: gravidade_DataCard1 | DataField: gravidade
+Visible: edicao
+Update: DataCardValue32.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.gravidade
+    Required: =edicao
+    Update: =DataCardValue32.Selected
+    Control: Label
+    Text: ="Gravidade"
+    - DataCardValue32:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 20: possivel_detectar_DataCard1 | DataField: possivel_detectar
+Visible: edicao
+Update: DataCardValue55.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.possivel_detectar
+    Required: =edicao
+    Update: =DataCardValue55.Selected
+    Control: Label
+    Text: ="Possível detecção no processo?"
+    - DataCardValue55:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 21: tipo_deteccao_DataCard1 | DataField: tipo_deteccao
+Visible: edicao
+Update: DataCardValue36.Selected
+    Control: TypedDataCard
+    Default: =ThisItem.tipo_deteccao
+    Required: =edicao
+    Update: =DataCardValue36.Selected
+    Control: Label
+    Text: ="Tipo de detecção"
+    - DataCardValue36:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.descricao_problema_Interno
+    Required: =edicao
+    Update: =DataCardValue25.Text
+    Control: Label
+    Text: ="Descrição do problema (interno):"
+    - DataCardValue25:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.acoes_contencao
+    Required: =edicao
+    Update: =DataCardValue40.SelectedItems
+    Control: Label
+    Text: ="Ações de contenção:"
+    - DataCardValue40:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.recomendacoes_providencias
+    Required: =edicao
+    Update: =DataCardValue41.Text
+    Control: Label
+    Text: ="Recomendações / Providências:"
+    - DataCardValue41:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 22: Status_DataCard1 | DataField: Status
+Visible: false
+Update: DataCardValue1.Text
+    Control: TypedDataCard
+    Default: =ThisItem.status
+    Required: =false
+    Update: =DataCardValue1.Text
+    Control: Label
+    Text: =Parent.DisplayName
+    - DataCardValue1:
+    Control: Classic/TextInput
+    Default: |-
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.o_que_fazer
+    Required: =edicao
+    Update: =DataCardValue2.Text
+    Control: Label
+    Text: ="O que fazer?"
+    - DataCardValue2:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.como_fazer
+    Required: =edicao
+    Update: =DataCardValue3.Text
+    Control: Label
+    Text: ="Como fazer"
+    - DataCardValue3:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.porque_fazer
+    Required: =edicao
+    Update: =DataCardValue5.Text
+    Control: Label
+    Text: ="Porque fazer?"
+    - DataCardValue5:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.quando_fazer
+    Required: =edicao
+    Update: =DataCardValue6.SelectedDate
+    Control: Label
+    Text: ="Quando fazer?"
+    - DataCardValue6:
+    Control: Classic/DatePicker
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.onde_fazer
+    Required: =edicao
+    Update: =DataCardValue7.Text
+    Control: Label
+    Text: ="Onde fazer?"
+    - DataCardValue7:
+    Control: Classic/TextInput
+    Default: =Parent.Default
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.equipe_responsavel_disposicao
+    Required: =edicao
+    Update: =Concat(DataCardValue4_2.SelectedItems,field_1,";")
+    Control: Label
+    Text: ="Equipe responsável pelo 8D"
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    - DataCardValue4_2:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: =Filter(varPessoas,field_1 in Split(Parent.Default,";"))
+    Control: TypedDataCard
+    Default: =ThisItem.Foto_auxiliar_retrabalho_selecao
+    Required: =false
+    Update: =Image4.Image
+    Control: Label
+    Text: ="Foto auxiliar Retrabalho / Seleção:"
+    - Image4:
+    Control: Image
+    - AddPicture3:
+    Control: AddMedia
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.'co-produtodesc'
+    Required: =false
+    Update: =DataCardValue14.Text
+    Control: Label
+    Text: =Parent.DisplayName
+    - DataCardValue14:
+    Control: Classic/TextInput
+    Default: =coprodtxt.Text
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.carryoverdesc
+    Required: =false
+    Update: =DataCardValue15.Text
+    Control: Label
+    Text: =Parent.DisplayName
+    - DataCardValue15:
+    Control: Classic/TextInput
+    Default: =carryovertxt.Text
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+    Control: TypedDataCard
+    Default: =ThisItem.caracteristicas_segurançadesc
+    Required: =false
+    Update: =DataCardValue16.Text
+    Control: Label
+    Text: =Parent.DisplayName
+    - DataCardValue16:
+    Control: Classic/TextInput
+    Default: =pecasegtxt.Text
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 23: data_contencao_DataCard2 | DataField: data_contencao
+Visible: edicao
+Update: DataCardValue45.SelectedDate
+    Control: TypedDataCard
+    Default: =ThisItem.data_contencao
+    Required: =edicao
+    Update: =DataCardValue45.SelectedDate
+    Control: Label
+    Text: ="Data Final de Contenção"
+    - DataCardValue45:
+    Control: Classic/DatePicker
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 24: local_8d_DataCard1 | DataField: local_8d
+Visible: false
+Update: DataCardValue48.Text
+    Control: TypedDataCard
+    Default: =ThisItem.local_8d
+    Required: =false
+    Update: =DataCardValue48.Text
+    Control: Label
+    Text: =Parent.DisplayName
+    - DataCardValue48:
+    Control: Classic/TextInput
+    Default: =If(edicao, Parent.Default,"APP")
+    Control: Label
+    Text: =Parent.Error
+    Control: Label
+    Text: ="*"
+
+======================================================
+CARD 25: abrir_8d_DataCard2 | DataField: Abrir_x0020_8D_x003f_
+Visible: Varperfil = "Admin" Or Varperfil = "Adminqual"
+Update: cxabrir8d.Selected.Value
+    Control: TypedDataCard
+    Default: =ThisItem.abrir_8d
+    Required: =false
+    Update: =cxabrir8d.Selected.Value
+    Control: Label
+    Text: ="Abrir 8D"
+    Control: Label
+    Text: ="*"
+    - cxabrir8d:
+    Control: Classic/ComboBox
+    DefaultSelectedItems: |-

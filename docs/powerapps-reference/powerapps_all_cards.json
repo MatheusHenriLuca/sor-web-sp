@@ -1,0 +1,2020 @@
+[
+  {
+    "cardName": "cliente_res_DataCard1",
+    "lineNum": 144,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "ErrorMessage66",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible68",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Label3_3",
+        "type": "Label",
+        "text": "=\"Informações do cliente\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Icon2_1",
+        "type": "Classic/Icon",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "RadioGroupCanvas3",
+        "type": "Radio",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=First(Choices([@'Resumo dos Incidentes de qualidade'].cliente_res))",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].cliente_res)"
+      },
+      {
+        "name": "DataCardKey42_1",
+        "type": "Label",
+        "text": "=\"Cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Tipo de RNC_DataCard1",
+    "lineNum": 246,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey42",
+        "type": "Label",
+        "text": "=\"Ocorrência:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "tipoocorrtxt",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=If(TipoRegistro = \"Interno\",[\"Interno\"],ThisItem.ocorrencia)",
+        "items": "=[\"Interno\",\"Formal\",\"Informal\",\"Improcedente\"]"
+      },
+      {
+        "name": "ErrorMessage37",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible37",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Origem do 8D interno_DataCard1",
+    "lineNum": 341,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey27",
+        "type": "Label",
+        "text": "=\"Área de detecção:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue26",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].setor_deteccao)"
+      },
+      {
+        "name": "ErrorMessage23",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible23",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey10",
+        "type": "Label",
+        "text": "=\"Código da ocorrência (cliente):\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue10",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage6",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible6",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "data_oficializacao_DataCard1",
+    "lineNum": 526,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey47",
+        "type": "Label",
+        "text": "=\"Data de oficialização no portal:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue17",
+        "type": "Classic/DatePicker",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage47",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible48",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey16",
+        "type": "Label",
+        "text": "=\"Setor responsável\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue27",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].Classificação)"
+      },
+      {
+        "name": "ErrorMessage10",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible10",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey11",
+        "type": "Label",
+        "text": "=\"Data da ocorrência\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DateValue1",
+        "type": "Classic/DatePicker",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Separator2",
+        "type": "Label",
+        "text": "=\":\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage7",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible7",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Turno_DataCard1",
+    "lineNum": 812,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey20",
+        "type": "Label",
+        "text": "=\"Turno da ocorrência:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue19",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].turno)"
+      },
+      {
+        "name": "ErrorMessage16",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible16",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Cliente_DataCard2",
+    "lineNum": 907,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey15",
+        "type": "Label",
+        "text": "=\"Cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "cxcliente",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].cliente)"
+      },
+      {
+        "name": "ErrorMessage11",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible11",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey76",
+        "type": "Label",
+        "text": "=\"Participantes do atendimento:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage56",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible58",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue4_1",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Filter(varPessoas,field_1 in Split(Parent.Default,\";\"))",
+        "items": "=varPessoas"
+      }
+    ]
+  },
+  {
+    "cardName": "final_componente_DataCard1",
+    "lineNum": 1099,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey46",
+        "type": "Label",
+        "text": "=\"Item detectado é um produto final ou um componente?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage46",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible47",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "RadioGroupCanvas1_1",
+        "type": "Radio",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=If(edicao, [Parent.Default],[\"Peça Final\"])",
+        "items": "|-"
+      }
+    ]
+  },
+  {
+    "cardName": "Produto1_DataCard1",
+    "lineNum": 1186,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey4",
+        "type": "Label",
+        "text": "|-",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage8",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible8",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "cxproduto_1",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|-",
+        "items": "=Filter(colpecasgerais_AA3,Cliente1 = cxcliente.Selected.Value,'Nesting level' = 0)"
+      },
+      {
+        "name": "cxsubcomp",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Filter(colpecasgerais_AA3,Left(Componente,9) = Left(ThisItem.produto,9))",
+        "items": "=colpecasgerais_AA3"
+      }
+    ]
+  },
+  {
+    "cardName": "Componente_DataCard1",
+    "lineNum": 1342,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey30",
+        "type": "Label",
+        "text": "|+",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage32",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible38",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "cxcomp_1",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|+",
+        "items": "=Filter(colpecasgerais_AA3,Componente <> Left(cxproduto_1.Selected.CodCliText,9))"
+      },
+      {
+        "name": "DataCardKey1",
+        "type": "Label",
+        "text": "=\"Evidência da ocorrência:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Image1",
+        "type": "Image",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "AddPicture1",
+        "type": "AddMedia",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage5",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible5",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Quantidade_DataCard1",
+    "lineNum": 1542,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey19",
+        "type": "Label",
+        "text": "=If(tipoocorrtxt.Selected.Value = \"Interno\",\"Quantidade não conforme:\",\"Quantidade não conforme no cliente:\")",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue18",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage15",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible15",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey24",
+        "type": "Label",
+        "text": "=\"Descrição da ocorrência do cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue23",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage20",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible20",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey23",
+        "type": "Label",
+        "text": "=\"Local de detecção do cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue22",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage19",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible19",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Impacto no Cliente_DataCard1",
+    "lineNum": 1807,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey25",
+        "type": "Label",
+        "text": "=\"Impacto no cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue24",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage21",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible21",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey79",
+        "type": "Label",
+        "text": "=\"Detalhamento da ocorrência (cliente):\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue56",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage57",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible57",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Defeito_DataCard1",
+    "lineNum": 1988,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey21",
+        "type": "Label",
+        "text": "=\"Classificação da ocorrência:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue20",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].classificacao_ocorrencia)"
+      },
+      {
+        "name": "ErrorMessage17",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible17",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey53",
+        "type": "Label",
+        "text": "=\"A peça é co-produto? (Peças espelho - lado esquerdo e direito)\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue51",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "|-",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].'co-produto')"
+      },
+      {
+        "name": "ErrorMessage39",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible39",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Label3_1",
+        "type": "Label",
+        "text": "=\"Informações de contenção\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Icon2_2",
+        "type": "Classic/Icon",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "coprodtxt",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=cxcomp_1.Selected.COPRODUTOS",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey45",
+        "type": "Label",
+        "text": "=\"A peça é carry over? (Itens que são utilizados em mais de um produto)\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue42",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|-",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].carryover)"
+      },
+      {
+        "name": "StarVisible25",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "carryovertxt",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=If(cxcomp_1.Selected.'CarryOver?' = \"Sim\" , Concat(Filter(colpecasgerais_AA3  ,Componente = cxcomp_1.Selected.Componente),Material,\" - \"),\"\")",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Severidade FMEA_DataCard1",
+    "lineNum": 2315,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey22",
+        "type": "Label",
+        "text": "=\"Possui características de segurança?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue21",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|-",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].caracteristicas_segurança)"
+      },
+      {
+        "name": "ErrorMessage18",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible18",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "pecasegtxt",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=cxproduto_1.Selected.Característica",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Reincidente_DataCard2",
+    "lineNum": 2428,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey28",
+        "type": "Label",
+        "text": "=\"Reincidente?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "reinctxt",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "|-",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage13",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible13",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "data_reinc_DataCard1",
+    "lineNum": 2524,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey74",
+        "type": "Label",
+        "text": "=Parent.DisplayName",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue57",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "|-",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage67",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible69",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Reincidente2_DataCard3",
+    "lineNum": 2612,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "Gallery1",
+        "type": "Gallery",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": "|-"
+      },
+      {
+        "name": "DataCardKey44",
+        "type": "Label",
+        "text": "=\"Documento para rastreabilidade:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "tipodoctxt",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=If(TipoRegistro = \"Interno\",[\"Etiqueta SAP\"],Choices([@'Resumo dos Incidentes de qualidade'].documento_rastreabilidade))"
+      },
+      {
+        "name": "ErrorMessage14",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible14",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey50",
+        "type": "Label",
+        "text": "=\"Código documento para rastreabilidade:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "codrasttxt",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage33",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible33",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey51",
+        "type": "Label",
+        "text": "=\"Qtd de peças suspeitas no cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue49",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage34",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible34",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey52",
+        "type": "Label",
+        "text": "=\"Qtd de peças inspecionadas no cliente:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue50",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage35",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible35",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey3",
+        "type": "Label",
+        "text": "=\"Foto da peça ok\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Image2",
+        "type": "Image",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "AddPicture2",
+        "type": "AddMedia",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage30",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible30",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Label3_2",
+        "type": "Label",
+        "text": "=\"Informações internas\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Icon2_3",
+        "type": "Classic/Icon",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Posto1_DataCard1",
+    "lineNum": 3193,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey31",
+        "type": "Label",
+        "text": "=\"Posto de trabalho cadastrado:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage38",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible40",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "cxposto",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|-",
+        "items": "|+"
+      }
+    ]
+  },
+  {
+    "cardName": "fmds_DataCard1",
+    "lineNum": 3305,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey32",
+        "type": "Label",
+        "text": "=\"Classificação da área:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage40",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible41",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "cxfmds",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|-",
+        "items": "|-"
+      }
+    ]
+  },
+  {
+    "cardName": "gravidade_DataCard1",
+    "lineNum": 3417,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey14",
+        "type": "Label",
+        "text": "=\"Gravidade\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue32",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].gravidade)"
+      },
+      {
+        "name": "ErrorMessage62",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible64",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "possivel_detectar_DataCard1",
+    "lineNum": 3514,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey73",
+        "type": "Label",
+        "text": "=\"Possível detecção no processo?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue55",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].possivel_detectar)"
+      },
+      {
+        "name": "ErrorMessage65",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible67",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "tipo_deteccao_DataCard1",
+    "lineNum": 3610,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey70",
+        "type": "Label",
+        "text": "=\"Tipo de detecção\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue36",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].tipo_deteccao)"
+      },
+      {
+        "name": "ErrorMessage64",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible66",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey26",
+        "type": "Label",
+        "text": "=\"Descrição do problema (interno):\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue25",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage22",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible22",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey29",
+        "type": "Label",
+        "text": "=\"Ações de contenção:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue40",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Parent.Default",
+        "items": "=Choices([@'Resumo dos Incidentes de qualidade'].acoes_contencao)"
+      },
+      {
+        "name": "ErrorMessage1",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible1",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey43",
+        "type": "Label",
+        "text": "=\"Recomendações / Providências:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue41",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage2",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible2",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "Status_DataCard1",
+    "lineNum": 3986,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey2",
+        "type": "Label",
+        "text": "=Parent.DisplayName",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue1",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "|-",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage3",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible3",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey5",
+        "type": "Label",
+        "text": "=\"O que fazer?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue2",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage4",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible4",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey6",
+        "type": "Label",
+        "text": "=\"Como fazer\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue3",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage24",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible24",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey7",
+        "type": "Label",
+        "text": "=\"Porque fazer?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue5",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage25",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible26",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey8",
+        "type": "Label",
+        "text": "=\"Quando fazer?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue6",
+        "type": "Classic/DatePicker",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage26",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible27",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey9",
+        "type": "Label",
+        "text": "=\"Onde fazer?\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue7",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=Parent.Default",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage27",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible28",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey17",
+        "type": "Label",
+        "text": "=\"Equipe responsável pelo 8D\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage28",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible29",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue4_2",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "=Filter(varPessoas,field_1 in Split(Parent.Default,\";\"))",
+        "items": "=Filter(varPessoas, (\"Super\" in posicao) Or (\"Coor\" in posicao) Or (\"Ger\" in posicao) Or (\"Analis\" in posicao))"
+      },
+      {
+        "name": "DataCardKey35",
+        "type": "Label",
+        "text": "=\"Foto auxiliar Retrabalho / Seleção:\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "Image4",
+        "type": "Image",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "AddPicture3",
+        "type": "AddMedia",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage29",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible31",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey33",
+        "type": "Label",
+        "text": "=Parent.DisplayName",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue14",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=coprodtxt.Text",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage42",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible43",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey34",
+        "type": "Label",
+        "text": "=Parent.DisplayName",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue15",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=carryovertxt.Text",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage43",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible44",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardKey36",
+        "type": "Label",
+        "text": "=Parent.DisplayName",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue16",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=pecasegtxt.Text",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage44",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible45",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "data_contencao_DataCard2",
+    "lineNum": 4985,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey54",
+        "type": "Label",
+        "text": "=\"Data Final de Contenção\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue45",
+        "type": "Classic/DatePicker",
+        "text": "",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage50",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible51",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "local_8d_DataCard1",
+    "lineNum": 5072,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey62",
+        "type": "Label",
+        "text": "=Parent.DisplayName",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "DataCardValue48",
+        "type": "Classic/TextInput",
+        "text": "",
+        "default": "=If(edicao, Parent.Default,\"APP\")",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "ErrorMessage52",
+        "type": "Label",
+        "text": "=Parent.Error",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible53",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      }
+    ]
+  },
+  {
+    "cardName": "abrir_8d_DataCard2",
+    "lineNum": 5158,
+    "dataField": "",
+    "displayName": "",
+    "update": "",
+    "visible": "",
+    "controls": [
+      {
+        "name": "DataCardKey65",
+        "type": "Label",
+        "text": "=\"Abrir 8D\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "StarVisible63",
+        "type": "Label",
+        "text": "=\"*\"",
+        "default": "",
+        "defaultSelected": "",
+        "items": ""
+      },
+      {
+        "name": "cxabrir8d",
+        "type": "Classic/ComboBox",
+        "text": "",
+        "default": "",
+        "defaultSelected": "|-",
+        "items": "=[\"Sim\",\"Não\"]"
+      }
+    ]
+  }
+]

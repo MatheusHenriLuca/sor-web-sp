@@ -1,0 +1,532 @@
+[
+  {
+    "index": 0,
+    "cardName": "cliente_res_DataCard1",
+    "dataField": "cliente_res",
+    "displayName": "cliente_res",
+    "label": "=\"Informações do cliente\" | =\"Cliente:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 1,
+    "cardName": "Tipo de RNC_DataCard1",
+    "dataField": "Tipo_x0020_de_x0020_RNC",
+    "displayName": "ocorrencia",
+    "label": "=\"Ocorrência:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 2,
+    "cardName": "Origem do 8D interno_DataCard1",
+    "dataField": "Origem_x0020_do_x0020_8D_x0020_i",
+    "displayName": "setor_deteccao",
+    "label": "=\"Área de detecção:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Interno\", true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Interno\", true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 3,
+    "cardName": "Cod. Reclamação_DataCard2",
+    "dataField": "field_1",
+    "displayName": "cod_ocorrencia",
+    "label": "=\"Código da ocorrência (cliente):\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value), true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\", true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 4,
+    "cardName": "data_oficializacao_DataCard1",
+    "dataField": "data_oficializacao",
+    "displayName": "data_oficializacao",
+    "label": "=\"Data de oficialização no portal:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value), true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value), true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 5,
+    "cardName": "Classificação_DataCard1",
+    "dataField": "field_18",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,Classificação)",
+    "label": "=\"Setor responsável\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 6,
+    "cardName": "Data da reclamação_DataCard2",
+    "dataField": "field_2",
+    "displayName": "data_ocorrencia",
+    "label": "=\"Data da ocorrência\" | =\":\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 7,
+    "cardName": "Turno_DataCard1",
+    "dataField": "field_11",
+    "displayName": "turno",
+    "label": "=\"Turno da ocorrência:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": true
+  },
+  {
+    "index": 8,
+    "cardName": "Cliente_DataCard2",
+    "dataField": "field_6",
+    "displayName": "cliente",
+    "label": "=\"Cliente:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": true
+  },
+  {
+    "index": 9,
+    "cardName": "Participantes do atendimento",
+    "dataField": "Participantes_x0020_do_x0020_ate",
+    "displayName": "participantes_atendimento",
+    "label": "=\"Participantes do atendimento:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 10,
+    "cardName": "final_componente_DataCard1",
+    "dataField": "final_componente",
+    "displayName": "final_componente",
+    "label": "=\"Item detectado é um produto final ou um componente?\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 11,
+    "cardName": "Produto1_DataCard1",
+    "dataField": "Produto1",
+    "displayName": "produto",
+    "label": "",
+    "visibleFormula": "=RadioGroupCanvas1_1.Selected.Value = \"Peça Final\" Or RadioGroupCanvas1_1.Selected.Value = \"Peça Final + Componente\" Or RadioGroupCanvas1_1.Selected.Value = \"SubComponente + Componente\"",
+    "requiredFormula": "=RadioGroupCanvas1_1.Selected.Value = \"Peça Final\" Or RadioGroupCanvas1_1.Selected.Value = \"Peça Final + Componente\" Or RadioGroupCanvas1_1.Selected.Value = \"SubComponente + Componente\"",
+    "inTypes": true
+  },
+  {
+    "index": 12,
+    "cardName": "Componente_DataCard1",
+    "dataField": "Componente",
+    "displayName": "componente",
+    "label": "",
+    "visibleFormula": "=RadioGroupCanvas1_1.Selected.Value = \"Componente\" Or RadioGroupCanvas1_1.Selected.Value = \"Peça Final + Componente\" Or RadioGroupCanvas1_1.Selected.Value = \"SubComponente + Componente\"",
+    "requiredFormula": "=RadioGroupCanvas1_1.Selected.Value = \"Componente\" Or RadioGroupCanvas1_1.Selected.Value = \"Peça Final + Componente\" Or RadioGroupCanvas1_1.Selected.Value = \"SubComponente + Componente\"",
+    "inTypes": true
+  },
+  {
+    "index": 13,
+    "cardName": "Foto peça NG_DataCard1",
+    "dataField": "Foto_x0020_da_x0020_pe_x00e7_a_x",
+    "displayName": "foto_ocorrencia",
+    "label": "=\"Evidência da ocorrência:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "'=false  '",
+    "inTypes": false
+  },
+  {
+    "index": 14,
+    "cardName": "Quantidade_DataCard1",
+    "dataField": "field_10",
+    "displayName": "quantidade",
+    "label": "=If(tipoocorrtxt.Selected.Value = \"Interno\",\"Quantidade não conforme:\",\"Quantidade não conforme no cliente:\")",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": true
+  },
+  {
+    "index": 15,
+    "cardName": "Reclamação do cliente_DataCard1",
+    "dataField": "field_15",
+    "displayName": "descricao_ocorrencia",
+    "label": "=\"Descrição da ocorrência do cliente:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 16,
+    "cardName": "Local de detecção_DataCard1",
+    "dataField": "field_14",
+    "displayName": "local_deteccao",
+    "label": "=\"Local de detecção do cliente:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 17,
+    "cardName": "Impacto no Cliente_DataCard1",
+    "dataField": "field_16",
+    "displayName": "impacto_cliente",
+    "label": "=\"Impacto no cliente:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 18,
+    "cardName": "DETALHAMENTO DA OCORRÊNCIA (CLIENTE)",
+    "dataField": "DETALHAMENTO_x0020_DA_x0020_OCOR",
+    "displayName": "detalhamento_ocorrencia",
+    "label": "=\"Detalhamento da ocorrência (cliente):\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 19,
+    "cardName": "Defeito_DataCard1",
+    "dataField": "field_12",
+    "displayName": "classificacao_ocorrencia",
+    "label": "=\"Classificação da ocorrência:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 20,
+    "cardName": "Co-Produto?_DataCard1",
+    "dataField": "co-produto",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,'co-produto')",
+    "label": "=\"A peça é co-produto? (Peças espelho - lado esquerdo e direito)\" | =\"Informações de contenção\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 21,
+    "cardName": "A peça é Carry Over?_DataCard1",
+    "dataField": "A_x0020_pe_x00e7_a_x0020__x00e9_",
+    "displayName": "carryover",
+    "label": "=\"A peça é carry over? (Itens que são utilizados em mais de um produto)\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 22,
+    "cardName": "Severidade FMEA_DataCard1",
+    "dataField": "field_13",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,caracteristicas_segurança)",
+    "label": "=\"Possui características de segurança?\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 23,
+    "cardName": "Reincidente_DataCard2",
+    "dataField": "field_8",
+    "displayName": "reincidente",
+    "label": "=\"Reincidente?\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=edicao",
+    "inTypes": true
+  },
+  {
+    "index": 24,
+    "cardName": "data_reinc_DataCard1",
+    "dataField": "data_reinc",
+    "displayName": "data_reinc",
+    "label": "=Parent.DisplayName",
+    "visibleFormula": "=false",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 25,
+    "cardName": "Reincidente2_DataCard3",
+    "dataField": "",
+    "displayName": "",
+    "label": "=ThisItem.data_ocorrencia | =ThisItem.classificacao_ocorrencia.Value",
+    "visibleFormula": "=If(reinctxt.Text = \"NÃO\" ,false,true)",
+    "requiredFormula": "=false",
+    "inTypes": true
+  },
+  {
+    "index": 26,
+    "cardName": "Tipo de documento para rastreabilidade",
+    "dataField": "Tipo_x0020_de_x0020_documento_x0",
+    "displayName": "documento_rastreabilidade",
+    "label": "=\"Documento para rastreabilidade:\"",
+    "visibleFormula": "ALWAYS",
+    "requiredFormula": "=true",
+    "inTypes": false
+  },
+  {
+    "index": 27,
+    "cardName": "Rastreabilidade da etiqueta",
+    "dataField": "Rastreabilidade_x0020_da_x0020_e",
+    "displayName": "cod_documento_rastreabilidade",
+    "label": "=\"Código documento para rastreabilidade:\"",
+    "visibleFormula": "=If(tipodoctxt.Selected.Value = \"Não Informado\" Or IsBlank(tipodoctxt.Selected.Value),false,true)",
+    "requiredFormula": "=If(tipodoctxt.Selected.Value = \"Não Informado\" Or IsBlank(tipodoctxt.Selected.Value),false,true)",
+    "inTypes": false
+  },
+  {
+    "index": 28,
+    "cardName": "Contenção de peças no cliente (Total de peças)_DataCard1",
+    "dataField": "Conten_x00e7__x00e3_o_x0020_de_x",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,qtd_peças_inspecionadas)",
+    "label": "=\"Qtd de peças suspeitas no cliente:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 29,
+    "cardName": "Contenção de peças no cliente (Peças NG)_DataCard1",
+    "dataField": "Conten_x00e7__x00e3_o_x0020_de_x0",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,qtd_peças_suspeitas)",
+    "label": "=\"Qtd de peças inspecionadas no cliente:\"",
+    "visibleFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "requiredFormula": "=If(tipoocorrtxt.Selected.Value = \"Formal\" Or IsBlank(tipoocorrtxt.Selected.Value) Or tipoocorrtxt.Selected.Value = \"Informal\",true,false)",
+    "inTypes": false
+  },
+  {
+    "index": 30,
+    "cardName": "Foto peça OK_DataCard1",
+    "dataField": "Foto_x0020_pe_x00e7_a_x0020_OK",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,foto_peçaok)",
+    "label": "=\"Foto da peça ok\" | =\"Informações internas\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 31,
+    "cardName": "Posto1_DataCard1",
+    "dataField": "Posto1",
+    "displayName": "posto_cadastrado",
+    "label": "=\"Posto de trabalho cadastrado:\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 32,
+    "cardName": "fmds_DataCard1",
+    "dataField": "fmds",
+    "displayName": "fmds",
+    "label": "=\"Classificação da área:\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": true
+  },
+  {
+    "index": 33,
+    "cardName": "gravidade_DataCard1",
+    "dataField": "gravidade",
+    "displayName": "gravidade",
+    "label": "=\"Gravidade\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": true
+  },
+  {
+    "index": 34,
+    "cardName": "possivel_detectar_DataCard1",
+    "dataField": "possivel_detectar",
+    "displayName": "possivel_detectar",
+    "label": "=\"Possível detecção no processo?\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 35,
+    "cardName": "tipo_deteccao_DataCard1",
+    "dataField": "tipo_deteccao",
+    "displayName": "tipo_deteccao",
+    "label": "=\"Tipo de detecção\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 36,
+    "cardName": "Descrição do problema (Interno)_DataCard1",
+    "dataField": "field_17",
+    "displayName": "descricao_problema_Interno",
+    "label": "=\"Descrição do problema (interno):\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 37,
+    "cardName": "Ações de contenção_DataCard1",
+    "dataField": "A_x00e7__x00f5_es_x0020_de_x0020",
+    "displayName": "acoes_contencao",
+    "label": "=\"Ações de contenção:\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 38,
+    "cardName": "Recomendações / Providências_DataCard1",
+    "dataField": "Recomenda_x00e7__x00f5_es_x0020_",
+    "displayName": "recomendacoes_providencias",
+    "label": "=\"Recomendações / Providências:\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 39,
+    "cardName": "Status_DataCard1",
+    "dataField": "Status",
+    "displayName": "status",
+    "label": "=Parent.DisplayName",
+    "visibleFormula": "=false",
+    "requiredFormula": "=false",
+    "inTypes": true
+  },
+  {
+    "index": 40,
+    "cardName": "O que fazer?_DataCard4",
+    "dataField": "O_x0020_que_x0020_fazer_x003f_",
+    "displayName": "o_que_fazer",
+    "label": "=\"O que fazer?\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 41,
+    "cardName": "Como fazer?_DataCard4",
+    "dataField": "Como_x0020_fazer_x003f_",
+    "displayName": "como_fazer",
+    "label": "=\"Como fazer\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 42,
+    "cardName": "Porque fazer?_DataCard4",
+    "dataField": "Porque_x0020_fazer_x003f_",
+    "displayName": "porque_fazer",
+    "label": "=\"Porque fazer?\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 43,
+    "cardName": "Quando fazer?_DataCard4",
+    "dataField": "Quando_x0020_fazer_x003f_",
+    "displayName": "quando_fazer",
+    "label": "=\"Quando fazer?\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 44,
+    "cardName": "Onde fazer?_DataCard4",
+    "dataField": "Onde_x0020_fazer_x003f_",
+    "displayName": "onde_fazer",
+    "label": "=\"Onde fazer?\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 45,
+    "cardName": "Quem vai fazer?_DataCard4",
+    "dataField": "Quem_x0020_vai_x0020_fazer_x003f",
+    "displayName": "equipe_responsavel_disposicao",
+    "label": "=\"Equipe responsável pelo 8D\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 46,
+    "cardName": "Foto auxiliar (Retrabalho/Seleção)_DataCard1",
+    "dataField": "Foto_x0020_auxiliar_x0020__x0028",
+    "displayName": "Foto_auxiliar_retrabalho_selecao",
+    "label": "=\"Foto auxiliar Retrabalho / Seleção:\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 47,
+    "cardName": "Co-Produto1?_DataCard1",
+    "dataField": "Co_x002d_Produto1_x003f_",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,'co-produtodesc')",
+    "label": "=Parent.DisplayName",
+    "visibleFormula": "=false",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 48,
+    "cardName": "A peça é Carry Over1?_DataCard1",
+    "dataField": "A_x0020_pe_x00e7_a_x0020__x00e9_0",
+    "displayName": "carryoverdesc",
+    "label": "=Parent.DisplayName",
+    "visibleFormula": "=false",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 49,
+    "cardName": "Características de Segurança?_DataCard1",
+    "dataField": "Caracter_x00ed_sticas_x0020_de_x",
+    "displayName": "=DataSourceInfo([@'Resumo dos Incidentes de qualidade'],DataSourceInfo.DisplayName,caracteristicas_segurançadesc)",
+    "label": "=Parent.DisplayName",
+    "visibleFormula": "=false",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 50,
+    "cardName": "data_contencao_DataCard2",
+    "dataField": "data_contencao",
+    "displayName": "data_contencao",
+    "label": "=\"Data Final de Contenção\"",
+    "visibleFormula": "=edicao",
+    "requiredFormula": "=edicao",
+    "inTypes": false
+  },
+  {
+    "index": 51,
+    "cardName": "local_8d_DataCard1",
+    "dataField": "local_8d",
+    "displayName": "local_8d",
+    "label": "=Parent.DisplayName",
+    "visibleFormula": "=false",
+    "requiredFormula": "=false",
+    "inTypes": false
+  },
+  {
+    "index": 52,
+    "cardName": "abrir_8d_DataCard2",
+    "dataField": "Abrir_x0020_8D_x003f_",
+    "displayName": "abrir_8d",
+    "label": "=\"Abrir 8D\"",
+    "visibleFormula": "=Varperfil = \"Admin\" Or Varperfil = \"Adminqual\"",
+    "requiredFormula": "=false",
+    "inTypes": false
+  }
+]

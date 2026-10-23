@@ -1,0 +1,225 @@
+{
+  "App.pa.yaml": [
+    {
+      "name": "App",
+      "type": "Unknown",
+      "properties": {
+        "OnStart": "Set(varRE,LookUp('Usuários ocorrências qualidade',nome = User().FullName,RE_Acesso));\nSet(varNome,User().FullName);\nSet(Varperfil,LookUp('Usuários ocorrências qualidade',nome = User().FullName,Título));\n\nClearCollect(varPessoas,ShowColumns(BASE_ATIVOS,'Nº pess.','Nº pessoal',UnidadeOrg,posicao));\nClearCollect(Col_Treinamentos,Distinct(Filter('Registros de treinamentos','RE:' = varRE),'ID-RNC'));\n\nConcurrent(\nClearCollect(colpecasgerais,\nSort(lista_geral_peças_aa3, Identificação, SortOrder.Ascending)),\nClearCollect(colpecasgerais2,\nSort(lista_geral_peças_aa3, Identificação, SortOrder.Descending)));\n\nClearCollect(colpecasgerais_AA3,\ncolpecasgerais,Filter(colpecasgerais2, Not(Identificação in colpecasgerais.Identificação)));\n\nClear(colpecasgerais);\nClear(colpecasgerais2);"
+      }
+    }
+  ],
+  "Cadastro_usuarios.pa.yaml": [
+    {
+      "name": "Cadastro_usuarios",
+      "type": "Unknown",
+      "properties": {
+        "Default": "Parent.Default",
+        "Items": "[\"Admin\",\"Adminqual\",\"Adminsesmt\",\"Liderqual\",\"Produção\",\"Processos\"]",
+        "OnSelect": "Back()",
+        "Visible": "varexcluir",
+        "DataSource": "'Usuários ocorrências qualidade'",
+        "Item": "Galleryusers.Selected",
+        "OnSuccess": "UpdateContext({ CurrentItem: Self.LastSubmit, editMode: false, newMode: false });\nNotify(\"Usuário alterado / cadastrado com sucesso!\",NotificationType.Success,5000);\nRefresh('Usuários ocorrências qualidade')",
+        "Required": "false",
+        "Update": "DataCardValue34.Text",
+        "DefaultSelectedItems": "[Parent.Default]",
+        "DisplayMode": "Parent.DisplayMode"
+      },
+      "Control": "Label",
+      "Variant": "AutoLayout"
+    }
+  ],
+  "Detalhes de 8D'S.pa.yaml": [
+    {
+      "name": "Detalhes de 8D'S.pa.yaml",
+      "type": "Screen/File",
+      "properties": {
+        "OnVisible": "Set(confirmexclud,false);\nIf(varitemselec.protcliente = \"Sim\",\nSet(varDetalhes,true),\nSet(varDetalhes,false));\n\nIf(varitemselec.protcliente = \"Sim\",\nSet(varRetSel,false),\nSet(varRetSel,true));\n\nSet(VarcorbtnRetSel,RGBA(13, 50, 61, 0.8));\nSet(VarcorbtnDetalhes,RGBA(40, 112, 134, 0.8));\n\nUpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nUpdateContext({varformprotcli:false});",
+        "OnSelect": "Set(varaprovacaoprotcli,\"Reprovado\");\nSet(varstatusprotcli,\"Reprovado\");\n\nIf(EditFormprotcli.Valid,\nNotify(\"Avaliação realizada com sucesso!\",NotificationType.Success,5000);\nSubmitForm(EditFormprotcli);\n,\nNotify(\"Favor preencher todos os campos\",NotificationType.Error,5000))",
+        "DisplayMode": "Parent.DisplayMode",
+        "Visible": "false",
+        "DataSource": "'Resumo dos Incidentes de qualidade'",
+        "OnSuccess": "UpdateContext({Vartelafundo:false});\nUpdateContext({Vartelapopup:false});\nUpdateContext({varformprotcli:false});",
+        "Default": "varstatusprotcli",
+        "Required": "false",
+        "Update": "DataCardValue47.Text",
+        "Item": "varitemselec",
+        "Items": "Choices([@'Resumo dos Incidentes de qualidade'].abrirrnc)",
+        "DefaultSelectedItems": "If(RadioGroupCanvas2.Selected.Value = \"A\",\n[{Value: \"Sim - Realizar Análise / Contenção / Rastreabilidade\"}])"
+      },
+      "Control": "Label",
+      "Variant": "AutoLayout"
+    }
+  ],
+  "Detalhes impressao.pa.yaml": [
+    {
+      "name": "Detalhes impressao.pa.yaml",
+      "type": "Screen/File",
+      "properties": {
+        "OnVisible": "Set(varimprimir,true);\nSet(varitenspag,true);\n// Primeiro, limpa e coleta os dados filtrados\nClearCollect(col_regtreinados, Filter('Registros de treinamentos', 'ID-RNC' = varitemselec.ID));\n\n// Verifica quantos registros existem\nSet(qtdRegistros, CountRows(col_regtreinados));\n\n// Se houver menos de 15, adiciona linhas em branco\nIf(\nqtdRegistros < 14,\nForAll(\nSequence(14 - qtdRegistros),\nCollect(col_regtreinados, {Nome: \"\"})\n)\n)",
+        "OnSelect": "Set(varimprimir,true)",
+        "Visible": "varimprimir=false",
+        "DisplayMode": "DisplayMode.View",
+        "Items": "{\nNome: \"Alerta Qualidade ID_\" & varitemselec.ID & \".pdf\",\nValor: varimpressao\n}"
+      },
+      "Control": "Text",
+      "Variant": "ManualLayout"
+    }
+  ],
+  "falha_entrega.pa.yaml": [
+    {
+      "name": "falha_entrega",
+      "type": "Unknown",
+      "properties": {
+        "Visible": "If(deleteMode, true, false)",
+        "Default": "ThisItem.Anexos",
+        "OnSelect": "Remove([@Lista_Falha_de_Entrega], selectedRecord); If(IsEmpty(Errors([@Lista_Falha_de_Entrega], selectedRecord)), UpdateContext( { CurrentItem: First([@Lista_Falha_de_Entrega]), itemSelected: false, editMode: false, newMode: false, deleteMode: false }));",
+        "Items": "Parent.Default",
+        "DataSource": "[@Lista_Falha_de_Entrega]",
+        "Item": "RecordsGallery1.Selected",
+        "OnFailure": "Notify(\"Não é possível salvar. Verifique se há erros no formulário.\", NotificationType.Error)",
+        "OnSuccess": "UpdateContext({ CurrentItem: Self.LastSubmit, editMode: false, newMode: false })",
+        "Required": "false",
+        "Update": "DataCardValue10_1.Attachments",
+        "DefaultDate": "Parent.Default",
+        "DisplayMode": "Parent.DisplayMode",
+        "DefaultSelectedItems": "Parent.Default",
+        "OnChange": "Set(vartrocarpeca,false)"
+      },
+      "Control": "Classic/Button",
+      "Variant": "AutoLayout"
+    }
+  ],
+  "Lista de 8D'S.pa.yaml": [
+    {
+      "name": "Lista de 8D'S.pa.yaml",
+      "type": "Screen/File",
+      "properties": {
+        "OnVisible": "\"=If(Varperfil = \\\"User\\\",\\nSet(Varfiltrorncs,\\nFilter('Resumo dos Incidentes de qualidade',\\n    status = \\\"Em Andamento\\\" \\n    Or ((protcliente = \\\"Sim\\\" Or protcliente = \\\"Aprovado\\\" Or protcliente = \\\"Reprovado\\\" Or protcliente = \\\"Registro Pago\\\") And\\n    detector = varNome)\\n    ));\\n       \\nSet(Varfiltrorncs2,\\n    If(TipoRegistro = \\\"protcliente\\\",\\n        Filter(Varfiltrorncs,detector = varNome),\\n        Filter(Varfiltrorncs,ID in Col_Treinamentos)))\\n)\"",
+        "OnSelect": "\"=If(Varperfil = \\\"Admin\\\" Or Varperfil = \\\"Adminqual\\\" Or Varperfil = \\\"Liderqual\\\",\\n        If(ThisItem.status = \\\"Relatório Inicial\\\",\\n            EditForm(EditFormNovoReg); Navigate('Registro de 8D',ScreenTransition.None,{edicao: true})\\n            ,\\n            Navigate('Detalhes de 8D''S'))\\n            ,\\n                    \\n            Navigate('Detalhes de 8D''S'));\\n\\nSet(varitemselec,ThisItem)\"",
+        "Visible": "!IsBlank(ThisItem.protcliente)",
+        "Default": "\"\"",
+        "Items": "\"=If(Varperfil = \\\"User\\\",\\nSort(Varfiltrorncs2,ID,SortOrder.Descending)\\n,\\n\\nSwitch(TipoRegistro,\\n\\n\\\"Cliente\\\",\\n\\nSort(Filter('Resumo dos Incidentes de qualidade', \\nocorrencia.Value = \\\"Formal\\\" Or ocorrencia.Value = \\\"Informal\\\" Or ocorrencia.Value = \\\"Improcedente\\\"\\n    ,\\n    And(\\n            Or(IsBlank(cb_area.Selected.Value),fmds = cb_area.Selected.Value),\\n            Or(IsBlank(cb_tipornc.Selected.Value),ocorrencia.Value = cb_tipornc.Selected.Value),\\n            Or(IsBlank(cb_cliente.Selected.Value),cliente.Value = cb_cliente.Selected.Value),\\n            Or(IsBlank(cb_setor.Selected.Value),Classificação.Value = cb_setor.Selected.Value),StartsWith(componente,TextSearchBox1.Text) Or StartsWith(produto,TextSearchBox1.Text) Or ID = TextSearchBox1.Text,\\n            Or(Gallery5_2.Selected.Value = \\\"Todas\\\",Gallery5_2.Selected.Value = status)\\n        )),\\n    ID,SortOrder.Descending),\\n\\n\\\"Interno\\\",\\n\\nSort(Filter('Resumo dos Incidentes de qualidade', \\nocorrencia.Value = \\\"Interno\\\"\\n    ,\\n    And(\\n            Or(IsBlank(cb_area.Selected.Value),fmds = cb_area.Selected.Value),\\n            Or(IsBlank(cb_tipornc.Selected.Value),ocorrencia.Value = cb_tipornc.Selected.Value),\\n            Or(IsBlank(cb_cliente.Selected.Value),cliente.Value = cb_cliente.Selected.Value),\\n            Or(IsBlank(cb_setor.Selected.Value),Classificação.Value = cb_setor.Selected.Value),StartsWith(componente,TextSearchBox1.Text) Or StartsWith(produto,TextSearchBox1.Text) Or ID = TextSearchBox1.Text,\\n            Or(Gallery5_2.Selected.Value = \\\"Todas\\\",Gallery5_2.Selected.Value = status)\\n        )),\\n    ID,SortOrder.Descending),\\n\\n\\\"Tudo\\\",\\n\\nSort(Filter('Resumo dos Incidentes de qualidade',\\n    And(\\n            Or(IsBlank(cb_area.Selected.Value),fmds = cb_area.Selected.Value),\\n            Or(IsBlank(cb_tipornc.Selected.Value),ocorrencia.Value = cb_tipornc.Selected.Value),\\n            Or(IsBlank(cb_cliente.Selected.Value),cliente.Value = cb_cliente.Selected.Value),\\n            Or(IsBlank(cb_setor.Selected.Value),Classificação.Value = cb_setor.Selected.Value),StartsWith(componente,TextSearchBox1.Text) Or StartsWith(produto,TextSearchBox1.Text) Or ID = TextSearchBox1.Text,\\n            Or(Gallery5_2.Selected.Value = \\\"Todas\\\",Gallery5_2.Selected.Value = status)\\n        )),\\n    ID,SortOrder.Descending),\\n\\n    \\\"protcliente\\\",\\n    \\n    Sort(Filter('Resumo dos Incidentes de qualidade',\\n    protcliente = \\\"Sim\\\" Or protcliente = \\\"Aprovado\\\" Or protcliente = \\\"Reprovado\\\" Or protcliente = \\\"Registro Pago\\\",\\n    And(\\n            Or(IsBlank(cb_area.Selected.Value),fmds = cb_area.Selected.Value),\\n            Or(IsBlank(cb_tipornc.Selected.Value),ocorrencia.Value = cb_tipornc.Selected.Value),\\n            Or(IsBlank(cb_cliente.Selected.Value),cliente.Value = cb_cliente.Selected.Value),\\n            Or(IsBlank(cb_setor.Selected.Value),Classificação.Value = cb_setor.Selected.Value),StartsWith(componente,TextSearchBox1.Text) Or StartsWith(produto,TextSearchBox1.Text) Or ID = TextSearchBox1.Text,\\n            Or(Gallery5_2.Selected.Value = \\\"Todas\\\",Gallery5_2.Selected.Value = status)\\n        )),\\n    ID,SortOrder.Descending)\\n    )\\n)\""
+      },
+      "Control": "Label",
+      "Variant": "AutoLayout"
+    }
+  ],
+  "Menu_2.pa.yaml": [
+    {
+      "name": "Menu_2",
+      "type": "Unknown",
+      "properties": {
+        "OnVisible": "Set(varocultarOcorr,false);\nSet(varocultarintcli,false);\nSet(varocultarconfig,false);\nSet(varocultarprotcli,false);",
+        "OnSelect": "Navigate(falha_entrega)",
+        "Visible": "false",
+        "DisplayMode": "DisplayMode.View",
+        "OnTimerStart": "Set(varhoraatual,Now());\nSet(varhoraatualsp,LookUp(data_hora_atual_apprnc,ID = 1,Modificado));\nSet(varserver,DateDiff(varhoraatualsp,varhoraatual,TimeUnit.Minutes))"
+      },
+      "Control": "Label",
+      "Variant": "AutoLayout"
+    }
+  ],
+  "Pagamento_Protecao_ao_cliente.pa.yaml": [
+    {
+      "name": "Pagamento_Protecao_ao_cliente",
+      "type": "Unknown",
+      "properties": {
+        "OnSelect": "",
+        "Items": "Filter('Resumo dos Incidentes de qualidade', protcliente=\"Aprovado\")"
+      },
+      "Control": "Label",
+      "Variant": "AutoLayout"
+    }
+  ],
+  "Rastreabilidade_Controle_Prod_1.pa.yaml": [
+    {
+      "name": "Rastreabilidade_Controle_Prod_1",
+      "type": "Unknown",
+      "properties": {
+        "OnVisible": "Reset(Gallery3_10);\nReset(Gallery3_11);\nReset(Gallery3_9);\nReset(Gallery3_1);\nReset(Gallery2);\n\nSet(varformrast2,true);\nSet(varformrast,false);\nSet(ligartimer,false);\n\nClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\n\nClearCollect(col_lotes_sap_reg,Filter(lotes_sap_reg,idrnc = varitemselec.ID));\n\nClearCollect(col_lotes_sap_reg_split1,\nUngroup( ForAll(col_lotes_sap_reg,{IDRNC:idrnc ,Seqrel:titulo, Lotes: Split(lote,\",\")}),Lotes));\n\nClearCollect( col_lotes_sap_reg_split2,DropColumns(\nAddColumns( col_lotes_sap_reg_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nData, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_etiquetas_vivas,Filter(etiquetas_vivas,idrnc = varitemselec.ID));\n\nClearCollect(col_etiquetas_vivas_split1,\nUngroup( ForAll(col_etiquetas_vivas,{IDRNC:idrnc ,Seqrel:titulo, etiquetasap: Split(etiquetasap,\",\")}),etiquetasap));\n\nClearCollect( col_etiquetas_vivas_split2,DropColumns(\nAddColumns( col_etiquetas_vivas_split1,\nproduto, First(Split(Value, \":\")).Value,\netiquetasap, Last(FirstN(Split(Value, \":\"), 2)).Value,\nLote, Last(FirstN(Split(Value, \":\"), 3)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 4)).Value,\nDeposito, Last(FirstN(Split(Value, \":\"), 5)).Value,\nData, Last(FirstN(Split(Value, \":\"), 6)).Value,\nBloqueio, Last(FirstN(Split(Value, \":\"), 7)).Value,\nStatusBloqueio, Last(Split(Value, \":\")).Value ),Value)\n);\n\nClearCollect(col_rast_cabeceiras,Filter(rast_cabeceiras,idrnc = varitemselec.ID));\n\nClearCollect(col_rast_cabeceiras_split1,\nUngroup( ForAll(col_rast_cabeceiras,{IDRNC:idrnc ,Seqrel:titulo,produto: Split(produto,\",\")}),produto));\n\nClearCollect( col_rast_cabeceiras_split2,DropColumns(\nAddColumns( col_rast_cabeceiras_split1,\nProduto, First(Split(Value, \":\")).Value,\nLote, Last(FirstN(Split(Value, \":\"), 2)).Value,\nQtd, Last(FirstN(Split(Value, \":\"), 3)).Value,\nEstoque, Last(Split(Value, \":\")).Value ),Value));\n\n\nSet(varformrast2,false);",
+        "OnSelect": "Set(varformrast,false);\nResetForm(EditForm1_10);\nResetForm(EditForm1_11)",
+        "Visible": "varformrast2",
+        "Default": "ThisItem.data_solicitacao",
+        "Items": "Filter(colpecasgerais_AA3,\nComponente <> Left(cxproduto_2.Selected.CodCliText,9)\nAnd Componente <> Left(cxsubcomp_1.Selected.CodCliText,9))",
+        "OnTimerEnd": "",
+        "OnTimerStart": "\"=ClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\\n\\nSwitch(\\n    LookUp(col_listarastreab,seq_relacionada = var_seq And varcomando = comando,status_geral),\\n    \\\"E\\\",Set(ligartimer,false);\\n        Notify(\\\"Erro no fluxo favor verificar informações\\\",NotificationType.Error,5000);,\\n    \\\"R\\\",Set(ligartimer,false);\\n        Notify(\\\"Item rastreado com sucesso!\\\",NotificationType.Success,5000);\\n        \\n        ClearCollect(col_listarastreab,Filter('Lista de Rastreabilidade',varitemselec.ID = id_rnc));\\n\\nClearCollect(col_lotes_sap_reg,\\nFilter(lotes_sap_reg,idrnc = varitemselec.ID));\\n\\nClearCollect(col_lotes_sap_reg_split1,\\nUngroup( ForAll(col_lotes_sap_reg,{IDRNC:idrnc ,Seqrel:titulo, Lotes: Split(lote,\\\",\\\")}),Lotes));\\n\\nClearCollect( col_lotes_sap_reg_split2,DropColumns( \\n    AddColumns( col_lotes_sap_reg_split1,\\n    Produto, First(Split(Value, \\\":\\\")).Value, \\n    Lote, Last(FirstN(Split(Value, \\\":\\\"), 2)).Value,  \\n    Qtd, Last(FirstN(Split(Value, \\\":\\\"), 3)).Value, \\n    Data, Last(Split(Value, \\\":\\\")).Value ),Value)\\n    );\\n\\nClearCollect(col_etiquetas_vivas,\\nFilter(etiquetas_vivas,idrnc = varitemselec.ID));\\n\\nClearCollect(col_etiquetas_vivas_split1,\\nUngroup( ForAll(col_etiquetas_vivas,{IDRNC:idrnc ,Seqrel:titulo, etiquetasap: Split(etiquetasap,\\\",\\\")}),etiquetasap));\\n\\nClearCollect( col_etiquetas_vivas_split2,DropColumns( \\n    AddColumns( col_etiquetas_vivas_split1, \\n    produto, First(Split(Value, \\\":\\\")).Value, \\n    etiquetasap, Last(FirstN(Split(Value, \\\":\\\"), 2)).Value,\\n    Lote, Last(FirstN(Split(Value, \\\":\\\"), 3)).Value,\\n    Qtd, Last(FirstN(Split(Value, \\\":\\\"), 4)).Value,\\n    Deposito, Last(FirstN(Split(Value, \\\":\\\"), 5)).Value,\\n    Data, Last(FirstN(Split(Value, \\\":\\\"), 6)).Value,\\n    Bloqueio, Last(FirstN(Split(Value, \\\":\\\"), 7)).Value,     \\n    StatusBloqueio, Last(Split(Value, \\\":\\\")).Value ),Value)\\n    );\\n\\nClearCollect(col_rast_cabeceiras,\\nFilter(rast_cabeceiras,idrnc = varitemselec.ID));\\n\\nClearCollect(col_rast_cabeceiras_split1,\\nUngroup( ForAll(col_rast_cabeceiras,{IDRNC:idrnc ,Seqrel:titulo,produto: Split(produto,\\\",\\\")}),produto));\\n\\nClearCollect( col_rast_cabeceiras_split2,DropColumns( \\n    AddColumns( col_rast_cabeceiras_split1, \\n    Produto, First(Split(Value, \\\":\\\")).Value, \\n    Lote, Last(FirstN(Split(Value, \\\":\\\"), 2)).Value, \\n    Qtd, Last(FirstN(Split(Value, \\\":\\\"), 3)).Value, \\n    Estoque, Last(Split(Value, \\\":\\\")).Value ),Value));\\n        \\n        );\\n    \\n    \"",
+        "DisplayMode": "Parent.DisplayMode",
+        "DataSource": "'Lista de Rastreabilidade'",
+        "Item": "LookUp(col_listarastreab,seq_relacionada=var_seq)",
+        "OnSuccess": "Set(ligartimer,true);\nSet(varformrast,false);",
+        "Required": "false",
+        "Update": "DataCardValue31.SelectedDate",
+        "DefaultDate": "If(EditForm1_11.Mode = FormMode.New, Today(), Parent.Default)",
+        "OnChange": "",
+        "DefaultSelectedItems": "Filter(colpecasgerais_AA3,Componente = Gallery2.Selected.cod_comp)"
+      },
+      "Control": "Label",
+      "Variant": "ManualLayout"
+    }
+  ],
+  "Registro de 8D.pa.yaml": [
+    {
+      "name": "Registro de 8D.pa.yaml",
+      "type": "Screen/File",
+      "properties": {
+        "OnVisible": "ClearCollect(varReincidente,'Resumo dos Incidentes de qualidade');\nIf(edicao,\nSet(vartrocarpeca,true),\nSet(vartrocarpeca,false))",
+        "OnSelect": "",
+        "DataSource": "'Resumo dos Incidentes de qualidade'",
+        "Item": "varitemselec",
+        "OnSuccess": "// If (edicao = false;\n//    Set(PatchTimervisible;true);;\n//    Set(Galeriaselect;EditForm1.LastSubmit);;\n//Navigate('Tela de impressão');\nNavigate('Lista de 8D''S')",
+        "Default": "ThisItem.abrir_8d",
+        "Required": "false",
+        "Update": "cxabrir8d.Selected.Value",
+        "Visible": "And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)",
+        "DefaultSelectedItems": "Switch(tipoocorrtxt.Selected.Value,\n\"Formal\", [\"Sim\"],\n\"Informal\", [\"Sim\"],\n\"Improcedente\", [\"Não\"],\n\"Interno\",If(edicao, [Parent.Default], [\"Não\"])\n)",
+        "Items": "[\"Sim\",\"Não\"]",
+        "DisplayMode": "Parent.DisplayMode",
+        "DefaultDate": "Parent.Default",
+        "OnChange": ""
+      },
+      "Control": "Classic/ComboBox",
+      "Variant": "ClassicTextualEdit"
+    }
+  ],
+  "Registroprotcli.pa.yaml": [
+    {
+      "name": "Registroprotcli",
+      "type": "Unknown",
+      "properties": {
+        "OnVisible": "",
+        "OnSelect": "",
+        "DataSource": "'Resumo dos Incidentes de qualidade'",
+        "Item": "varitemselec",
+        "OnSuccess": "Navigate('Lista de 8D''S');\nReset(Gallery5_2);\nSet(TipoRegistro , \"protcliente\");",
+        "Default": "If(edicao, Parent.Default,\"APP\")",
+        "Required": "false",
+        "Update": "DataCardValue52.Text",
+        "DefaultDate": "If(edicao = false,Today(), Parent.Default)",
+        "DisplayMode": "Parent.DisplayMode",
+        "Visible": "And(Parent.Required, Parent.DisplayMode=DisplayMode.Edit)",
+        "DefaultSelectedItems": "[\"Interno\"]",
+        "Items": "Choices([@'Resumo dos Incidentes de qualidade'].ocorrencia)",
+        "OnChange": ""
+      },
+      "Control": "Label",
+      "Variant": "ClassicTextualEdit"
+    }
+  ],
+  "Verif_user.pa.yaml": [
+    {
+      "name": "Verif_user",
+      "type": "Unknown",
+      "properties": {
+        "OnVisible": "UpdateContext({resettext: !resettext});\nUpdateContext({MostrarMensagem: false})",
+        "Default": "\"\"",
+        "Visible": "false",
+        "OnSelect": "If(\nIsBlank(LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text))),\nSet(Varperfil,\"User\");\nSet(varRE,Value(Logintxt_1.Text));\nSet(varNome,LookUp(varPessoas,Title = Logintxt_1.Text,field_1));\nClearCollect(Col_Treinamentos,Distinct(Filter('Registros de treinamentos','RE:' = varRE),'ID-RNC'));\nNavigate(Menu_2);\n,\nIf(\n!IsBlank(LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text) And Senha = Senhatxt_1.Text)),\nSet(varRE,Value(Logintxt_1.Text));\nSet(Varperfil,LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text) And Senha = Senhatxt_1.Text,Título));\nSet(varNome,LookUp('Usuários ocorrências qualidade',RE_Acesso = Value(Logintxt_1.Text) And Senha = Senhatxt_1.Text,nome));\nClearCollect(Col_Treinamentos,Distinct(Filter('Registros de treinamentos','RE:' = varRE),'ID-RNC'));\nNavigate(Menu_2);\nUpdateContext({MostrarMensagem: false}),\nUpdateContext({MostrarMensagem: true})))",
+        "OnTimerStart": "Set(varhoraatual,Now());\nSet(varhoraatualsp,LookUp(data_hora_atual_apprnc,ID = 1,Modificado));\nSet(varserver,DateDiff(varhoraatualsp,varhoraatual,TimeUnit.Minutes))",
+        "DisplayMode": "DisplayMode.View"
+      },
+      "Control": "Label",
+      "Variant": "AutoLayout"
+    }
+  ]
+}
