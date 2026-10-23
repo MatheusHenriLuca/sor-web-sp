@@ -543,6 +543,21 @@ function sharepointDirectProxyPlugin(env: Record<string, string>): Plugin {
             return;
           }
 
+          // 18.1 PLANO DE AÇÃO - DELETE Excluir Plano Mestre
+          if (req.method === 'DELETE' && req.url.startsWith('/api/sp/planos/')) {
+            const itemId = req.url.replace('/api/sp/planos/', '').split('?')[0];
+            const listId = "87789d0a-3594-40e0-9109-33e8836884f4";
+            const delUrl = `https://graph.microsoft.com/v1.0/sites/${sitePlanoAcao}/lists/${listId}/items/${itemId}`;
+            const gRes = await fetch(delUrl, {
+              method: 'DELETE',
+              headers: { 'Authorization': `Bearer ${token}` }
+            });
+            delete dataCache['sp_planos'];
+            res.statusCode = gRes.status;
+            res.end(JSON.stringify({ success: gRes.ok }));
+            return;
+          }
+
           // 19. AÇÕES DETALHADAS - GET ('Action plan_acoes')
           if (req.method === 'GET' && (req.url === '/api/sp/acoes' || req.url.startsWith('/api/sp/acoes?'))) {
             const forceRefresh = req.url.includes('refresh=true');

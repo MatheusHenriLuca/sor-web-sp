@@ -1348,28 +1348,87 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
                   />
                 </div>
                 <div>
-                  <label className="text-xs font-semibold text-slate-700 block mb-1">Data Planejada</label>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Prazo Planejado *</label>
                   <input
                     type="date"
                     value={formNovaAcao.data_planejada}
                     onChange={e => setFormNovaAcao({ ...formNovaAcao, data_planejada: e.target.value })}
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl font-semibold"
+                  />
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Data de Acompanhamento</label>
+                  <input
+                    type="date"
+                    value={formNovaAcao.data_acompanhamento || ''}
+                    onChange={e => setFormNovaAcao({ ...formNovaAcao, data_acompanhamento: e.target.value })}
                     className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
                   />
                 </div>
               </div>
 
-              <div className="grid grid-cols-2 gap-3">
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
                 <div>
                   <label className="text-xs font-semibold text-slate-700 block mb-1">Tipo de Ação</label>
                   <select
                     value={formNovaAcao.tipo_acao}
                     onChange={e => setFormNovaAcao({ ...formNovaAcao, tipo_acao: e.target.value as any })}
-                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium"
                   >
                     <option value="CONTENÇÃO">CONTENÇÃO</option>
                     <option value="CORRETIVA">CORRETIVA</option>
                     <option value="PREVENTIVA">PREVENTIVA</option>
                     <option value="MELHORIA">MELHORIA</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Yokoten?</label>
+                  <select
+                    value={formNovaAcao.yokoten || 'NÃO'}
+                    onChange={e => setFormNovaAcao({ ...formNovaAcao, yokoten: e.target.value })}
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  >
+                    <option value="NÃO">NÃO</option>
+                    <option value="SIM">SIM (Abrangência)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Poka-Yoke?</label>
+                  <select
+                    value={formNovaAcao.poka_yoke || 'NÃO'}
+                    onChange={e => setFormNovaAcao({ ...formNovaAcao, poka_yoke: e.target.value })}
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  >
+                    <option value="NÃO">NÃO</option>
+                    <option value="SIM">SIM (Dispositivo)</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Classificação</label>
+                  <select
+                    value={formNovaAcao.oc_nd || 'OCORRÊNCIA'}
+                    onChange={e => setFormNovaAcao({ ...formNovaAcao, oc_nd: e.target.value })}
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  >
+                    <option value="OCORRÊNCIA">OCORRÊNCIA</option>
+                    <option value="NÃO DETECÇÃO">NÃO DETECÇÃO</option>
+                  </select>
+                </div>
+              </div>
+
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Doc. 8D/7D a Atualizar</label>
+                  <select
+                    value={formNovaAcao.eight_d_seven_d || 'IT'}
+                    onChange={e => setFormNovaAcao({ ...formNovaAcao, eight_d_seven_d: e.target.value })}
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl font-medium"
+                  >
+                    <option value="IT">IT (Instrução Trabalho)</option>
+                    <option value="FMEA">FMEA</option>
+                    <option value="PCP">PCP</option>
+                    <option value="FOLHA DE PROCESSO">FOLHA PROCESSO</option>
+                    <option value="DESENHO">DESENHO</option>
                   </select>
                 </div>
                 <div>
@@ -1380,6 +1439,17 @@ export const Gestao8DView: React.FC<Gestao8DViewProps> = ({
                     className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
                   >
                     <option value="SIM">SIM</option>
+                    <option value="NÃO">NÃO</option>
+                  </select>
+                </div>
+                <div>
+                  <label className="text-xs font-semibold text-slate-700 block mb-1">Validação Qualidade?</label>
+                  <select
+                    value={formNovaAcao.validacao_acao || 'SIM'}
+                    onChange={e => setFormNovaAcao({ ...formNovaAcao, validacao_acao: e.target.value as any })}
+                    className="w-full text-xs p-2 bg-slate-50 border border-slate-200 rounded-xl"
+                  >
+                    <option value="SIM">SIM (Auditoria)</option>
                     <option value="NÃO">NÃO</option>
                   </select>
                 </div>

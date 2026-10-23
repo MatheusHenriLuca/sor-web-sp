@@ -352,7 +352,7 @@ export type TipoAcao = 'CONTENÇÃO' | 'CORRETIVA' | 'PREVENTIVA' | 'MELHORIA';
 export interface PlanoAcaoMestre {
   id: string | number;
   id_rel1?: string;
-  idprograma?: string; // Chave externa (ex: varid8d -> "I - 4520")
+  idprograma?: string; // Chave externa (ex: varid8d -> "I - 4520", "Q - 6192")
   indicador_programa_estrategico: string;
   sub1?: string;
   sub2?: string;
@@ -365,13 +365,14 @@ export interface PlanoAcaoMestre {
   status: string;
   data_abertura?: string;
   responsavel_abertura?: string;
+  fast_response?: string;
 }
 
 export interface PlanoAcaoItem {
   id: string | number;
   id_rel2?: string; // FK Cabeçalho ('Action plan'.id)
-  id_programa_acoes?: string; // FK Externa (ex: varid8d -> "I - 4520")
-  causa?: string; // Causa raiz dos 5 Porquês
+  id_programa_acoes?: string; // FK Externa (ex: varid8d -> "I - 4520", "Q - 6192")
+  causa?: string; // Causa raiz dos 5 Porquês / Ishikawa
   contra_medida: string;
   comentarios_observacoes?: string;
   data_planejada: string;
@@ -383,15 +384,19 @@ export interface PlanoAcaoItem {
   tipo_acao: TipoAcao;
   yokoten?: 'SIM' | 'NÃO' | string;
   poka_yoke?: 'SIM' | 'NÃO' | string;
-  eight_d_seven_d?: 'FMEA' | 'Trabalho Padronizado' | 'Auditoria Escalonada' | string;
-  oc_nd?: 'Ocorrência' | 'Não Detecção' | string;
+  eight_d_seven_d?: 'FMEA' | 'PCP' | 'IT' | 'FOLHA DE PROCESSO' | 'DESENHO' | string;
+  OData__x0038_d_7d?: string; // Nome interno da coluna 8D/7D no SharePoint
+  oc_nd?: 'OCORRÊNCIA' | 'NÃO DETECÇÃO' | string;
   evidencia_obrigatoria?: 'SIM' | 'NÃO' | 'Sim' | 'Não';
   validacao_acao?: 'SIM' | 'NÃO' | 'Sim' | 'Não';
   status: StatusAcao;
   comentarios_evidencia?: string;
   comentarios_validacao?: string;
+  anexos_evidencia?: string[];
   finalizacao?: 'Sim' | 'Não';
   status_revisar2?: string;
   revisao_data?: string;
   data_plan_anterior?: string;
+  setor_resp_indicador2?: string;
+  prioridade?: PrioridadeAcao;
 }

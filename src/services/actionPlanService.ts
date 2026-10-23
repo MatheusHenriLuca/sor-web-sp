@@ -120,13 +120,34 @@ export const actionPlanService = {
   },
 
   /**
-   * Exclui uma ação
+   * Exclui uma ação com registro de motivo de auditoria
    */
-  async deleteAcao(id: string | number): Promise<any> {
-    const res = await fetch(`/api/sp/acoes/${id}`, {
+  async deleteAcao(id: string | number, motivo?: string, usuario?: string): Promise<any> {
+    const q = new URLSearchParams();
+    if (motivo) q.set('motivo', motivo);
+    if (usuario) q.set('usuario', usuario);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+
+    const res = await fetch(`/api/sp/acoes/${id}${qs}`, {
       method: 'DELETE'
     });
     if (!res.ok) throw new Error(`Falha ao excluir ação (${res.status})`);
+    return await res.json();
+  },
+
+  /**
+   * Exclui um plano mestre com registro de motivo de auditoria
+   */
+  async deletePlano(id: string | number, motivo?: string, usuario?: string): Promise<any> {
+    const q = new URLSearchParams();
+    if (motivo) q.set('motivo', motivo);
+    if (usuario) q.set('usuario', usuario);
+    const qs = q.toString() ? `?${q.toString()}` : '';
+
+    const res = await fetch(`/api/sp/planos/${id}${qs}`, {
+      method: 'DELETE'
+    });
+    if (!res.ok) throw new Error(`Falha ao excluir plano (${res.status})`);
     return await res.json();
   }
 };
